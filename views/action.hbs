@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Action Tracker</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
+
+</head>
+<body>
+
+<div class="container">
+  <h2>Action Tracker</h2>
+  <p>Prototyping with DataTables</p>
+  <table class="table table-striped" id="tbl_ap">
+    <thead>
+      <tr>
+        <th>Action/Task</th>
+        <th>Status</th>
+        <th>Owner</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{#each actions}}
+      <tr>
+        <td>{{title}}</td>
+        <td>{{status}}</td>
+        <td>{{owner}}</td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</div>
+<script type="text/javascript">
+
+  $(document).ready( function () {
+      $('#tbl_ap').DataTable();
+  } );
+</script>
+</body>
+</html>
