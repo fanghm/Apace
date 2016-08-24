@@ -1,9 +1,4 @@
-var express = require('express');
-var router = express.Router();
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  //res.send('respond with a resource');
+exports.index = function(req, res, next) {
   var aps = [
     {
       title: 'Kickoff Apace project',
@@ -20,7 +15,4 @@ router.get('/', function(req, res, next) {
   ];
 
   res.render('action', {actions: aps});
-
-});
-
-module.exports = router;
+};
