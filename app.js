@@ -4,14 +4,22 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var config = require('./config');
 var routes = require('./routes/index');
-
 var app = express();
+require('colors');  // for colorful console output
+
+// middlewares
+var renderMiddleware = require('./middlewares/render');
+require('./middlewares/db_trace');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');  // handlebars template engine
+
+if (config.debug) {
+  app.use(renderMiddleware.render); // logging render time
+}
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

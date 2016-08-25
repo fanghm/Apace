@@ -1,18 +1,40 @@
-exports.index = function(req, res, next) {
-  var aps = [
-    {
-      title: 'Kickoff Apace project',
-      status: 'Done',
-      owner: 'Frank',
-      addDate: 'August 17th 2016'
-    },
-    {
-      title: 'Read Handlebars template engine documents',
-      status: 'Ongoing',
-      owner: 'Tony',
-      addDate: 'August 18th 2016'
-    }
-  ];
+var Action       = require('../models').Action;
+var config       = require('../config');
+var EventProxy   = require('eventproxy');
 
-  res.render('action', {actions: aps});
+var getActionsByQuery = function (query, opt, callback) {
+  query.deleted = false;
+  Action.find(query, {}, opt, function (err, actions) {
+    if (err) {
+      return callback(err);
+    }
+
+    if (actions.length === 0) {
+      return callback(null, []);
+    }
+
+    //actions = _.compact(actions);
+    return callback(null, actions);
+  });
 };
+
+
+exports.index = function(req, res, next) {
+
+  getActionsByQuery({}, {}, function (err, actions) {
+    if (err) {
+      return next(err);
+    }
+
+    res.render('action', {actions: actions});
+  });
+
+};
+
+
+
+
+
+
+
+
