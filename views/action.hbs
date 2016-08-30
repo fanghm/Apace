@@ -16,9 +16,17 @@
 <div class="container">
   <h2>Action Tracker</h2>
   <p>Prototyping with DataTables</p>
-  <table class="table table-striped" id="tbl_ap">
+
+  <p>
+    <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#myModal">
+      <span class="glyphicon glyphicon-plus"></span> Add an action item
+    </button>
+  </p>
+
+  <table class="table table-striped table-hover" id="tbl_ap">
     <thead>
       <tr>
+        <th>#</th>
         <th>Action/Task</th>
         <th>Status</th>
         <th>Owner</th>
@@ -29,21 +37,129 @@
     <tbody>
     {{#each actions}}
       <tr>
+        <td></td>
         <td>{{title}}</td>
         <td>{{status}}</td>
         <td>{{owner}}</td>
-        <td>{{create_at}}</td>
-        <td>{{update_at}}</td>
+        <td>{{create_at_ago}}</td>
+        <td>{{update_at_time}}</td>
       </tr>
     {{/each}}
     </tbody>
   </table>
 </div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add an action point</h4>
+      </div>
+
+      <div class="modal-body">
+
+        <form>
+          <div class="form-group">
+            <label for="category">Category:</label>
+            <select class="form-control" id="category">
+              <option>CIF</option>
+              <option>RCA/EDA</option>
+              <option>Retrospective</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="title">Action/Task:</label>
+            <input class="form-control" id="title" required/>
+          </div>
+
+          <div class="form-group">
+            <label for="details">Details:</label>
+            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="details"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="owner">Owner:</label>
+            <input class="form-control" id="owner"/>
+          </div>
+
+          <div class="form-group">
+            <label for="optradio">Status:</label><br>
+            <label class="radio-inline"><input type="radio" name="status" value='New' checked>New</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Ongoing'>Ongoing</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Done'>Done</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Cancelled'>Cancelled</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Blocked'>Blocked</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Suspended'>Suspended</label>
+          </div>
+        </form>
+
+      </div>
+
+      <div class="modal-footer">
+        <button id="addRow" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script type="text/javascript">
 
   $(document).ready( function () {
-      $('#tbl_ap').DataTable();
+    var t = $('#tbl_ap').DataTable( {
+      "columnDefs": [ {
+          "searchable": false,
+          "orderable": false,
+          "targets": 0
+        } ],
+      "order": [[ 1, 'asc' ]]
+    });
+
+    t.on( 'order.dt search.dt', function () {
+      t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+          cell.innerHTML = i+1;
+      } );
+    } ).draw();
+
+    $('#addRow').on( 'click', function () {
+      var data = {
+        title:    $('#title').val(),
+        details:  $('#details').val(),
+        status:   $('input[name=status]:checked').val(),
+        owner:    $('#owner').val(),
+        category: $('#category').val()
+      };
+      $.post('/add', data, null, 'json')
+        .done(function(action) {
+          // if (action.error) {
+
+          // } else {
+
+          // }
+
+          t.row.add( [
+            '',
+            action.title,
+            action.status,
+            action.owner,
+            action.create_at_ago(),
+            action.update_at_time()
+          ] ).draw( false );
+
+        })
+        .fail(function(){
+          alert('something is wrong');
+        });
+
+    } );
+
   } );
+
 </script>
 </body>
 </html>
