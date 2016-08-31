@@ -4,11 +4,15 @@
   <title>Action Tracker</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
+
+  <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/libs/dataTables/css/jquery.dataTables.css">
+
+  <script type="text/javascript" src="/libs/jquery.min.js"></script>
+  <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="/libs/dataTables/js/jquery.dataTables.js"></script>
+
+  <script type="text/javascript" src="/libs/moment-with-locales.min.js"></script>
 
 </head>
 <body>
@@ -65,7 +69,8 @@
         <form>
           <div class="form-group">
             <label for="category">Category:</label>
-            <select class="form-control" id="category">
+            <select class="form-control" id="category" required>
+              <option value="">-- Select --</option>
               <option>CIF</option>
               <option>RCA/EDA</option>
               <option>Retrospective</option>
@@ -74,17 +79,17 @@
           </div>
           <div class="form-group">
             <label for="title">Action/Task:</label>
-            <input class="form-control" id="title" required/>
+            <input class="form-control" id="title" value="" required/>
           </div>
 
           <div class="form-group">
             <label for="details">Details:</label>
-            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="details"></textarea>
+            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="details" value=""></textarea>
           </div>
 
           <div class="form-group">
             <label for="owner">Owner:</label>
-            <input class="form-control" id="owner"/>
+            <input class="form-control" id="owner" value=""/>
           </div>
 
           <div class="form-group">
@@ -134,29 +139,36 @@
         owner:    $('#owner').val(),
         category: $('#category').val()
       };
-      $.post('/add', data, null, 'json')
-        .done(function(action) {
-          // if (action.error) {
 
-          // } else {
+      $.ajax({
+        url: '/add',
+        dataType: 'json',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(action, textStatus, jQxhr) {
+          console.log('success');
+          console.log('client:' + JSON.stringify(action));
 
-          // }
+          //var moment = require('moment');
+          moment.locale('zh-cn');
 
           t.row.add( [
             '',
             action.title,
             action.status,
             action.owner,
-            action.create_at_ago(),
-            action.update_at_time()
+            moment(action.create_at).fromNow(),
+            moment(action.update_at).format('YYYY-MM-DD HH:mm')
           ] ).draw( false );
 
-        })
-        .fail(function(){
-          alert('something is wrong');
-        });
+        },
+        error: function( jqXhr, textStatus, errorThrown ){
+            console.log( errorThrown );
+        }
+      });
 
-    } );
+    } );  // end of onclick
 
   } );
 

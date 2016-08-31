@@ -1,6 +1,7 @@
 var Action       = require('../models').Action;
 var config       = require('../config');
 var EventProxy   = require('eventproxy');
+var validator    = require('validator');
 
 var getActionsByQuery = function (query, opt, callback) {
   query.deleted = false;
@@ -33,13 +34,12 @@ exports.index = function(req, res, next) {
 
 exports.add = function(req, res, next) {
 
-  console.log('req.body: ' + JSON.stringify(req.body));
+  //console.log('req.body: ' + JSON.stringify(req.body));
   // because there're too many attributes,
   // get them from req.body in a loop
-  var act = new Action();  // note: _id is a new one
-  for (var prop in act) {
-    if (req.body.hasOwnProperty(prop)) {
-      console.log("updated prop:" + prop);
+  var act = new Action();
+  for(var prop in req.body) {
+    if (Object.getPrototypeOf(act).hasOwnProperty(prop)) {
       if (typeof req.body[prop] === 'string') {
         act[prop] = validator.trim(req.body[prop]);
       } else {
@@ -49,13 +49,13 @@ exports.add = function(req, res, next) {
   }
 
   // act.creator = req.session.user._id;
-  console.log("act: " + JSON.stringify(act));
-  act.save(function (err, action) {
+  //console.log("act: " + JSON.stringify(act));
+  act.save(function (err, action, numAffected) {
     if (err) {
       console.log("Error in saving: " + err.message);
-      return res.json(200, {error: err.message});
+      return res.status(200).json({error: err.message});
     } else {
-      return res.json(200, action);
+      return res.status(200).json(action);
     }
 
   });
