@@ -6,19 +6,21 @@ var ObjectId  = Schema.ObjectId;
 
 var ActionSchema = new Schema({
   title:      { type: String, required: true },
-  details:    { type: String },
+  desc:       { type: String },
   status:     { type: String,
                 enum: ['New', 'Ongoing', 'Done', 'Cancelled', 'Blocked', 'Suspended'] },
 
   category:   { type: String,
-                enum: ['RCA/EDA', 'Retrospective', 'CIF', 'Other'] },
+                enum: ['RCA/EDA', 'Retrospective', 'CIF meeting', 'Internal Audit', 'Other'] },
+  source:     { type: String }, // optional: PR/Feature ID, etc
+  team:       { type: String }, // optional, for team APs
 
-  team:       { type: String },
+  le:         { type: Date },   // latest estimation
   owner:      { type: String },
-  creator:    { type: String },
-  due_date:   { type: Date},
+  creator:    { type: String }, // auto fill
 
-  progress:   { type: String },
+  history:    { type: String }, // eg: [2016/09/01] created by xxx
+  //updated_by: { type: String },
 
   create_at:  { type: Date, default: Date.now },
   update_at:  { type: Date, default: Date.now },
@@ -28,6 +30,6 @@ var ActionSchema = new Schema({
 
 ActionSchema.plugin(BaseModel);
 ActionSchema.index({status: 1});
-ActionSchema.index({author_id: 1, create_at: -1});
+ActionSchema.index({category: 1, create_at: -1});
 
 mongoose.model('Action', ActionSchema);

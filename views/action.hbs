@@ -13,16 +13,18 @@
   <script type="text/javascript" charset="utf8" src="/libs/dataTables/js/jquery.dataTables.js"></script>
 
   <script type="text/javascript" src="/libs/moment-with-locales.min.js"></script>
-
 </head>
 <body>
+<script type="text/javascript">
+  var action_map = {{{ json }}};
+</script>
 
 <div class="container">
   <h2>Action Tracker</h2>
   <p>Prototyping with DataTables</p>
 
   <p>
-    <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#myModal">
+    <button type="button" class="updateModal btn btn-success pull-right" data-id="" data-toggle="modal" data-target="#editModal">
       <span class="glyphicon glyphicon-plus"></span> Add an action item
     </button>
   </p>
@@ -36,6 +38,7 @@
         <th>Owner</th>
         <th>Create Time</th>
         <th>Last Update</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -47,14 +50,19 @@
         <td>{{owner}}</td>
         <td>{{create_at_ago}}</td>
         <td>{{update_at_time}}</td>
+        <td>
+          <a class="updateModal btn btn-primary" data-id="{{_id}}" data-toggle="modal" data-target="#editModal">
+            <span class="glyphicon glyphicon-edit"></span>
+          </a>
+        </td>
       </tr>
     {{/each}}
     </tbody>
   </table>
 </div>
 
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
+<!-- Modal for add/edit an action item-->
+<div id="editModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
@@ -67,29 +75,36 @@
       <div class="modal-body">
 
         <form>
+          <input id="_id" value="" style="display:none;"/>
+
           <div class="form-group">
             <label for="category">Category:</label>
             <select class="form-control" id="category" required>
               <option value="">-- Select --</option>
-              <option>CIF</option>
-              <option>RCA/EDA</option>
-              <option>Retrospective</option>
-              <option>Other</option>
+              <option value="CIF meeting">CIF meeting</option>
+              <option value="RCA/EDA">RCA/EDA</option>
+              <option value="Retrospective">Retrospective</option>
+              <option value="Other">Other</option>
             </select>
           </div>
           <div class="form-group">
             <label for="title">Action/Task:</label>
-            <input class="form-control" id="title" value="" required/>
+            <input class="form-control" id="title" required/>
           </div>
 
           <div class="form-group">
-            <label for="details">Details:</label>
-            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="details" value=""></textarea>
+            <label for="desc">Description:</label>
+            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="desc"></textarea>
+          </div>
+
+          <div id="grp_history" class="form-group" style="display:none;">
+            <label for="history">History:</label>
+            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="history"></textarea>
           </div>
 
           <div class="form-group">
             <label for="owner">Owner:</label>
-            <input class="form-control" id="owner" value=""/>
+            <input class="form-control" id="owner"/>
           </div>
 
           <div class="form-group">
@@ -106,7 +121,8 @@
       </div>
 
       <div class="modal-footer">
-        <button id="addRow" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
+        <button id="delete" type="button" class="btn btn-success" style="display:none;">Delete</button>
+        <button id="save" type="button" class="btn btn-success">Save</button>
       </div>
     </div>
 
@@ -131,10 +147,77 @@
       } );
     } ).draw();
 
-    $('#addRow').on( 'click', function () {
+    //triggered when modal is about to be shown
+    $('#updateModal').on('show.bs.modal', function(e) {
+
+        //get data-id attribute of the clicked element
+        var dataId = $(e.relatedTarget).data('id');
+        console.log("data-id:" + dataId);
+
+        //populate the textbox
+        $(e.currentTarget).find('button[name="delete"]').data("id", dataId);
+        $(".modal-footer #delete").data("id", dataId);
+    });
+
+    $('.updateModal').on( 'click', function () {
+      //console.log('action_map: ' + JSON.stringify(action_map) );
+      if ( $(this).parent().hasClass('selected') ) {
+        $(this).parent().removeClass('selected');
+      }
+      else {
+        t.$('tr.selected').parent().removeClass('selected');
+        $(this).parent().addClass('selected');
+      }
+
+      var dataId = $(this).data('id');
+      console.log('action: ' + JSON.stringify(action_map[dataId]) );
+
+      if (dataId !== "") {
+        $(".modal-title").text( 'Edit an action point' );
+        //$(".modal-footer #delete").data("id", dataId);  // set data-id attr for deletion
+        $("#delete").show();
+        $('.modal-body #title').data("id", dataId);
+        $("#grp_history").show();
+
+        //$(".modal-body #_id").val( dataId );
+        $('.modal-body #category').val( action_map[dataId].category );
+        $(".modal-body #title").val( action_map[dataId].title );
+        $(".modal-body #desc").val( action_map[dataId].desc );
+        $(".modal-body #owner").val( action_map[dataId].owner );
+        $(".modal-body #history").val( action_map[dataId].history );
+        $("input[name=status][value=" + action_map[dataId].status + "]").attr('checked', 'checked');
+      } else {
+        $("#delete").hide();
+        $("#grp_history").hide();
+      }
+
+    });
+
+    $('#delete').on( 'click', function () {
+      var yes = confirm('Are you sure you want to delete this action?');
+      if (yes) {
+        $.ajax({
+          type: 'DELETE',
+          url: '/delete/' + $('#_id').val()
+        }).done(function( response ) {
+          if (response.msg === '') {
+            // TODO: update the table
+            t.row('.selected').remove().draw( false );  // draw(false): redraw the table keeping the current paging
+          }
+          else {
+            alert('Error: ' + response.msg);
+          }
+        });
+      } else {
+        return false;
+      }
+
+    });
+
+    $('#save').on( 'click', function () {
       var data = {
         title:    $('#title').val(),
-        details:  $('#details').val(),
+        desc:     $('#desc').val(),
         status:   $('input[name=status]:checked').val(),
         owner:    $('#owner').val(),
         category: $('#category').val()
@@ -146,11 +229,11 @@
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(data),
+
         success: function(action, textStatus, jQxhr) {
           console.log('success');
           console.log('client:' + JSON.stringify(action));
 
-          //var moment = require('moment');
           moment.locale('zh-cn');
 
           t.row.add( [
@@ -159,7 +242,8 @@
             action.status,
             action.owner,
             moment(action.create_at).fromNow(),
-            moment(action.update_at).format('YYYY-MM-DD HH:mm')
+            moment(action.update_at).format('YYYY-MM-DD HH:mm'),
+            '<a class="updateModal btn btn-primary" data-id="' + data._id + '" data-toggle="modal" data-target="#editModal"> <span class="glyphicon glyphicon-edit"></span> </a>'
           ] ).draw( false );
 
         },
