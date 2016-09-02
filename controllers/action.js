@@ -72,8 +72,61 @@ exports.add = function(req, res, next) {
   });
 };
 
+exports.delete = function(req, res, next) {
+  var action_id = req.params.id;
+  console.log("delete id:" + action_id);
 
+  // Update deleted as true
+  Action.findOne({_id: action_id, deleted: false}, function (err, action) {
+    if (err) {
+      return res.status(200).json({ msg: err.message });
+    }
 
+    if (!action) {
+      return res.status(200).json({ msg: 'Action not found: _id = ' + action_id });
+    }
 
+    action.deleted = true;
+    action.save();
+    //console.log("Deleted action: " + JSON.stringify(action));
 
+    return res.status(200).json({msg: ''});
+  });
+};
 
+exports.update = function(req, res, next) {
+  var action_id = req.params.id;
+  console.log("delete id:" + action_id);
+
+  // Update deleted as true
+  Action.findOne({_id: action_id, deleted: false}, function (err, action) {
+    if (err) {
+      return res.status(200).json({ msg: err.message });
+    }
+
+    if (!action) {
+      return res.status(200).json({ msg: 'Action not found: _id = ' + action_id });
+    }
+
+    // update
+    for(var prop in req.body) {
+      if (Object.getPrototypeOf(action).hasOwnProperty(prop)) {
+        if (typeof req.body[prop] === 'string') {
+          action[prop] = validator.trim(req.body[prop]);
+        } else {
+          action[prop] = req.body[prop];
+        }
+      }
+    }
+
+    action.save(function (err, action, numAffected) {
+      if (err) {
+        console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(action));
+        return res.status(200).json({error: err.message});
+      } else {
+        return res.status(200).json(action);
+      }
+    });
+
+  });
+}

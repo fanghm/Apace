@@ -6,14 +6,27 @@ Display action
 
 Add action 
   - Data validation
-  - Read action category/status definitions from backend/database, and allow to update from UI
+  - Read action category/status definitions from backend/database, and allow to update from UI setting
   - Send email notification upon action creation
+  - Datetime picker for LE input
 
 Update/Remove action
+Update action history with fixed date prefix and updater signature suffix
+
+LDAP authentitaion and store user info in session
+Permission control
 
 Provide permlink of each item (as mail link)
 
+SaaS
+
+Update logging/history
+
 Setting
+  - category/status dictionary
+  - user default filter expression like "{category: 'CIF meeting', status: 'ongoing'}"
+
+
 
 
 Problems:
