@@ -59,6 +59,8 @@ exports.add = function(req, res, next) {
     }
   }
 
+  act.create_at = Date.now();
+  act.update_at = Date.now();
   // act.creator = req.session.user._id;
   //console.log("act: " + JSON.stringify(act));
   act.save(function (err, action, numAffected) {
@@ -87,6 +89,7 @@ exports.delete = function(req, res, next) {
     }
 
     action.deleted = true;
+    action.update_at = Date.now();
     action.save();
     //console.log("Deleted action: " + JSON.stringify(action));
 
@@ -96,7 +99,7 @@ exports.delete = function(req, res, next) {
 
 exports.update = function(req, res, next) {
   var action_id = req.params.id;
-  console.log("delete id:" + action_id);
+  console.log("update id:" + action_id);
 
   // Update deleted as true
   Action.findOne({_id: action_id, deleted: false}, function (err, action) {
@@ -119,6 +122,7 @@ exports.update = function(req, res, next) {
       }
     }
 
+    action.update_at = Date.now();
     action.save(function (err, action, numAffected) {
       if (err) {
         console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(action));

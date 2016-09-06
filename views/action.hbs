@@ -7,11 +7,12 @@
 
   <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/libs/dataTables/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="/libs/jquery-datetimepicker/jquery.datetimepicker.min.css">
 
   <script type="text/javascript" src="/libs/jquery.min.js"></script>
   <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" charset="utf8" src="/libs/dataTables/js/jquery.dataTables.js"></script>
-
+  <script type="text/javascript" src="/libs/jquery-datetimepicker/jquery.datetimepicker.full.min.js"></script>
   <script type="text/javascript" src="/libs/moment-with-locales.min.js"></script>
 </head>
 <body>
@@ -24,7 +25,7 @@
   <p>Prototyping with DataTables</p>
 
   <p>
-    <button type="button" class="updateModal btn btn-success pull-right" data-id="" data-toggle="modal" data-target="#editModal">
+    <button type="button" class="updateModal btn btn-success pull-right" data-id="" data-toggle="modal" data-target="#dlgModal">
       <span class="glyphicon glyphicon-plus"></span> Add an action item
     </button>
   </p>
@@ -51,7 +52,7 @@
         <td>{{create_at_ago}}</td>
         <td>{{update_at_time}}</td>
         <td>
-          <a class="updateModal btn btn-primary" data-id="{{_id}}" data-toggle="modal" data-target="#editModal">
+          <a class="updateModal btn btn-primary" data-id="{{_id}}" data-toggle="modal" data-target="#dlgModal">
             <span class="glyphicon glyphicon-edit"></span>
           </a>
         </td>
@@ -62,14 +63,14 @@
 </div>
 
 <!-- Common modal for add/edit an action item-->
-<div id="editModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+<div id="dlgModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="lblModal">
+  <div class="modal-dialog" role="document">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add an action point</h4>
+        <h4 class="modal-title" id="lblModal">Add an action point</h4>
       </div>
 
       <div class="modal-body">
@@ -97,12 +98,12 @@
 
           <div class="form-group">
             <label for="le">LE:</label>
-            <input type="date" class="form-control" id="le"/>
+            <input class="form-control" id="le"/>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id="grp_status" style="display:none;">
             <label for="optradio">Status:</label><br>
-            <label class="radio-inline"><input type="radio" name="status" value='New' checked>New</label>
+            <label class="radio-inline"><input type="radio" name="status" value='New'>New</label>
             <label class="radio-inline"><input type="radio" name="status" value='Ongoing'>Ongoing</label>
             <label class="radio-inline"><input type="radio" name="status" value='Done'>Done</label>
             <label class="radio-inline"><input type="radio" name="status" value='Cancelled'>Cancelled</label>
@@ -115,32 +116,45 @@
             <input class="form-control" id="owner"/>
           </div>
 
-          <div id="grp_history" class="form-group" style="display:none;">
+          <div class="form-group" id="grp_history" style="display:none;">
             <label for="history">History:</label>
-            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" rows="5" id="history"></textarea>
+            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" id="history"></textarea>
           </div>
 
         </form>
       </div>
 
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button id="deleteAction" type="button" class="btn btn-danger" style="display:none;">Delete</button>
         <button id="saveAction" type="button" class="btn btn-success">Save</button>
       </div>
-    </div>
-  </div>
-</div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script type="text/javascript">
 
   $(document).ready( function () {
+
+    $('#le').datetimepicker({
+      //timepicker: false,
+      defaultTime:'17:00',
+      closeOnDateSelect:true,
+      //format: 'Y/m/d',
+      mask: true,
+      weeks: true,
+      //minDate: 0,
+      lang: 'zh',
+    });
+
     var t = $('#tblAction').DataTable( {
-      "columnDefs": [ {
-          "searchable": false,
-          "orderable": false,
-          "targets": 0
-        } ],
-      //"order": [[ 1, 'asc' ]]
+      // "columnDefs": [ {
+      //     "searchable": false,
+      //     "orderable": false,
+      //     "targets": 0
+      //   } ],
+      // "order": [[ 1, 'asc' ]]
     });
 
     t.on( 'order.dt search.dt', function () {
@@ -149,59 +163,71 @@
       } );
     } ).draw();
 
+    $('#dlgModal').on('shown.bs.modal', function() {
+      $('#title').focus();
+    });
+
     // Triggered when modal is about to be shown
-    $('.updateModal').on('show.bs.modal', function(e) {
-        $('#title').focus();
+    $('#dlgModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget) // Button that triggered the modal
+      var dataId = button.data('id') // Extract info from data-* attributes
     });
 
     $('.updateModal').on( 'click', function () {
-      //console.log('action_map: ' + JSON.stringify(action_map) );
-
-      var dataId = $(this).data('id');  // todo: WHY THIS DOESN'T WORK!!!
-      if (dataId !== "") {  // edit
-        console.log('update action: ' + JSON.stringify(action_map[dataId]) );
-
-        var row = $(this).closest("tr").find("td:nth-child(1)").text();
-        //console.log("row index: " + row);
-
+      var dataId = $(this).data('id');
+      if (typeof dataId !== 'undefined' && dataId !== '') {  // for edit/delete
         $(".modal-title").text( 'Edit an action point' );
 
-        // distinguish add/edit
+        var row = $(this).closest("tr").find("td:nth-child(1)").text();
+        console.log("dataId: " + dataId + " row: " + row);
+
+        // set data-id attr for db update, set data-row for view update
+        // $(".modal-footer button").data("id", dataId);
+        // $(".modal-footer button").data("row", row);
+
         $(".modal-footer #saveAction").data("id", dataId);
         $(".modal-footer #saveAction").data("row", row);
 
-        // set data-id attr for deletion from db, set data-row for deletion from view
         $(".modal-footer #deleteAction").data("id", dataId);
         $(".modal-footer #deleteAction").data("row", row);
-        //console.log("#deleteAction.data-id:" + $(".modal-footer #deleteAction").data("id"));
-        //console.log("#deleteAction.data-row:" + $(".modal-footer #deleteAction").data("row"));
+        console.log("#deleteAction.data-id:" + $(".modal-footer #deleteAction").data("id"));
+        console.log("#deleteAction.data-row:" + $(".modal-footer #deleteAction").data("row"));
 
         $("#deleteAction").show();
         $("#grp_history").show();
+        $("#grp_status").show();
 
-        $('.modal-body #category').val( action_map[dataId].category );
+        //console.log('update action: ' + JSON.stringify(action_map[dataId]) );
         $(".modal-body #title").val( action_map[dataId].title );
         $(".modal-body #desc").val( action_map[dataId].desc );
+        $('.modal-body #category').val( action_map[dataId].category );
+        $('.modal-body #le').val( action_map[dataId].le );
         $(".modal-body #owner").val( action_map[dataId].owner );
+
+        console.log("action_map[dataId].history: " + action_map[dataId].history);
         $(".modal-body #history").val( action_map[dataId].history );
-        $("input[name=status][value=" + action_map[dataId].status + "]").attr('checked', 'checked');
+        $("input[name=status][value='" + action_map[dataId].status + "']").prop("checked", true);
       } else {  // add
         $("#deleteAction").hide();
         $("#grp_history").hide();
+        $("#grp_status").hide();
 
-        $('.modal-body #category').val("");
         $(".modal-body #title").val("");
         $(".modal-body #desc").val("");
+        $('.modal-body #category').val("");
+        $(".modal-body #le").val("");
         $(".modal-body #owner").val("");
-        $(".modal-body #history").val("");
-        $("input[name=status][value='New']").attr('checked', 'checked');
+        //$(".modal-body #history").val("");
+        //$("input[name=status][value='New']").attr('checked', 'checked');
       }
 
     });
 
+    // delete an action
     $('#deleteAction').on( 'click', function () {
       var dataId = $(this).data('id');
-      //console.log("onclick #deleteAction.data-id:" + dataId);
+      var row = $(this).data('row');
+      console.log("onclick #deleteAction.data-id: " + dataId + ", data-row: " + row);
 
       var yes = confirm('Are you sure you want to delete this action?');
       if (yes) {
@@ -210,53 +236,63 @@
           url: '/delete/' + dataId
         }).done(function( res ) {
           if (res.msg === '') {
-            //console.log("deleted");
-            t.row($(this).data('row')).remove().draw( false );  // draw(false): redraw the table keeping the current paging
+            var tr = $('#' + dataId);
+            console.log("deleted: " + JSON.stringify(tr));
+            // draw(false): redraw the table keeping the current paging
+            t.row(tr).remove().draw( false );
           } else {
             alert('Error: ' + res.msg);
           }
         });
+
+        $('#dlgModal').modal('hide');
       } else {
         return false;
       }
 
     });
 
+    // add/edit an action
     $('#saveAction').on( 'click', function () {
+      var row = $(this).data('row');
+      var dataId = $(this).data("id");  // or: $(".modal-footer #saveAction").data("id");
+      console.log("onclick #saveAction.data-id: " + dataId + ", data-row: " + row);
+
+
       var data = {
         title:    $('#title').val(),
         desc:     $('#desc').val(),
         category: $('#category').val(),
         le:       $('#le').val(),
-        status:   $('input[name=status]:checked').val(),
+        status:   'New',
         owner:    $('#owner').val(),
-        history:  $('#history').val(),
       };
 
       var addAction = true;
       var url = '/add';
       var method = 'POST';
 
-      var row = $(this).data('row');
-      var dataId = $(this).data("id");// $(".modal-footer #saveAction").data("id");
-
-      if (dataId != "") {
+      if (typeof dataId !== 'undefined' && dataId != '') {
         addAction = false;
         url = '/update/' + dataId;
         method = 'PUT';
+
+        data.history = $('#history').val();
+        data.status = $('input[name=status]:checked').val();
       }
 
       $.ajax({
         url: url,
-        dataType: 'json',
         type: method,
-        contentType: 'application/json',
+        dataType: 'json',
         data: JSON.stringify(data),
+        contentType: 'application/json',
 
         success: function(action, textStatus, jQxhr) {
-          console.log('success');
-          //console.log('client:' + JSON.stringify(action));
-          if (addAction) {  // add
+          console.log('data to update: ' + JSON.stringify(data));
+          console.log('saved: ' + JSON.stringify(action));
+
+          if (addAction) {
             moment.locale('zh-cn');
 
             t.row.add( [
@@ -266,33 +302,36 @@
               action.owner,
               moment(action.create_at).fromNow(),
               moment(action.update_at).format('YYYY-MM-DD HH:mm'),
-              '<a class="updateModal btn btn-primary" data-id="' + data._id + '" data-toggle="modal" data-target="#editModal"> <span class="glyphicon glyphicon-edit"></span> </a>'
+              '<a class="updateModal btn btn-primary" data-id="' + action._id + '" data-toggle="modal" data-target="#dlgModal"> <span class="glyphicon glyphicon-edit"></span> </a>'
             ] ).draw( false );
           } else {  // update
-            // TODO: refresh row, update client, and action_map (in case of later update as we read data from it)
             //var tr = $('#tblAction tbody tr').eq(row);
             var tr = $('#' + dataId);
-            console.log('row:' + row + ', tr:' + tr.html());
+            console.log('update row: ' + row + ', tr:\n' + tr.html());
+
+            // TODO: update more cols in view
             tr.find('td:eq(1)').html( action.title ); // col 2
             tr.find("td:nth-child(3)").html( action.status ); // col 3
             console.log('td1:' + tr.find('td:eq(1)').html());
 
             t.row(tr).invalidate().draw(false);
-            console.log('updated tr:' + $('#' + dataId).html());  // undefined when no visible in current page
+            console.log('updated tr to:' + $('#' + dataId).html());  // TODO: undefined when not visible in current page
 
+            // update action_map (in case of later update as we read data from it to render update modal)
             action_map[dataId] = action;
           }
 
-          $('.updateModal').modal('hide');
+          $('#dlgModal').modal('hide');  // why doesn't it work?
         },
-        error: function( jqXhr, textStatus, errorThrown ){
+
+        error: function( jqXhr, textStatus, errorThrown ) {
             console.log( errorThrown );
         }
       });
 
-    } );  // end of onclick
+    });  // end of onclick
 
-  } );
+  });
 
 </script>
 </body>

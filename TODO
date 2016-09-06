@@ -4,6 +4,16 @@ Display action
   - Add display filters: category, status...
     eg: Filter: [select field] [=|<>|...] [select value]  // for date field, select date range to filter
 
+Keyboard shortcuts support
+  - 'a': add
+  - 'e': edit
+  - 'd': delete
+  - 'k/j' or up/down arrow: move up/down
+  - 'n/p' or page up/down: next/previous page
+  - For modal: 
+    - 'd': delete, 's': save, ESC: close modal
+
+
 Add action 
   - Data validation
   - Read action category/status definitions from backend/database, and allow to update from UI setting
@@ -33,3 +43,6 @@ Problems:
 ---------
 Add action modal dialog always loading with previous data
 The sequence number of new added item (may not be a problem)
+
+Done:
+---------
