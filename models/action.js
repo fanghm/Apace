@@ -7,15 +7,15 @@ var ObjectId  = Schema.ObjectId;
 var ActionSchema = new Schema({
   title:      { type: String, required: true },
   desc:       { type: String },
-  status:     { type: String,
+  status:     { type: String, required: true,
                 enum: ['New', 'Ongoing', 'Done', 'Cancelled', 'Blocked', 'Suspended'] },
 
-  category:   { type: String,
+  category:   { type: String, required: true,
                 enum: ['RCA/EDA', 'Retrospective', 'CIF meeting', 'Internal Audit', 'Other'] },
   source:     { type: String }, // optional: PR/Feature ID, etc
   team:       { type: String }, // optional, for team APs
 
-  le:         { type: Date },   // latest estimation
+  le:         { type: Date, required: true },   // latest estimation
   owner:      { type: String },
   creator:    { type: String }, // auto fill
 

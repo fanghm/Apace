@@ -59,10 +59,9 @@ exports.add = function(req, res, next) {
     }
   }
 
-  act.create_at = Date.now();
-  act.update_at = Date.now();
+  act.create_at = act.update_at = Date.now();
   // act.creator = req.session.user._id;
-  //console.log("act: " + JSON.stringify(act));
+  console.log("add act: " + JSON.stringify(act));
   act.save(function (err, action, numAffected) {
     if (err) {
       console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(act));
