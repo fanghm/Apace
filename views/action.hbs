@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Action Tracker</title>
+  <title>Apace Action Tracker</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/libs/dataTables/css/jquery.dataTables.css">
   <link rel="stylesheet" type="text/css" href="/libs/jquery-datetimepicker/jquery.datetimepicker.min.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 
   <script type="text/javascript" src="/libs/jquery.min.js"></script>
   <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
@@ -21,11 +22,11 @@
 </script>
 
 <div class="container">
-  <h2>Action Tracker</h2>
-  <p>Prototyping with DataTables</p>
+  <img src="/images/logo.png" alt="Apace" height="85px" width="138px">
+  <span class="title"><sub>super-fast action tracker</sub></span>
 
   <p>
-    <button id="btnAdd" type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#dlgModal">
+    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#dlgModal">
       <span class="glyphicon glyphicon-plus"></span> Add an action item
     </button>
   </p>
@@ -62,6 +63,18 @@
     {{/each}}
     </tbody>
   </table>
+</div>
+
+<br>
+<div class="container">
+  <H4>Keyboard shortcuts:</H4>
+  <ul>
+    <li><kbd>/</kbd>: search</li>
+    <li><kbd>ctrl</kbd> + <kbd>a</kbd>: add</li>
+    <li><kbd>ctrl</kbd> + <kbd>e</kbd>: edit</li>
+    <li><kbd>ctrl</kbd> + <kbd>d</kbd>: delete</li>
+    <li><kbd>ctrl</kbd> + <kbd>s</kbd>: save</li>
+  </ul>
 </div>
 
 <!-- Common modal for add/edit an action item-->
@@ -181,7 +194,8 @@
       var btnId = button.attr("id");
       // console.log('btnId: ' + btnId + ', dataId: ' + dataId );
 
-      if (btnId === "btnAdd") {  // add
+      if ( typeof(button) === 'undefined'  // modal triggered by keyboard shortcut
+            || (typeof(dataId) === 'undefined' || dataId === '') ) {  // add
         $(".modal-title").text( 'Add an action point' );
 
         $("#deleteAction").hide();
@@ -266,18 +280,33 @@
       var dataId = $(this).data("id");  // or: $(".modal-footer #saveAction").data("id");
       // console.log("onclick #saveAction.data-id: " + dataId + ", data-row: " + row);
 
+      // data validation
+      var allowSubmit = true;
+      $.each($('form input:text'), function(index, formField) {
+        if($(formField).val().trim().length == 0) {
+          alert( 'Field cannot be empty: ' + $(formField).attr("id") );
+          allowSubmit = false;
+          return false;
+        }
+      });
+
+      if ( $('#category').val().trim().length == 0 ) {
+        alert( 'Field cannot be empty: ' + 'category' );
+        allowSubmit = false;
+      }
+
+      if (!allowSubmit) {
+        return false;
+      }
+
       var data = {
         title:    $('#title').val(),
         desc:     $('#desc').val(),
         category: $('#category').val(),
-        status:   'New',
+        le:       moment( $('#le').val().trim() , 'YYYY-MM-DD HH:mm'),
         owner:    $('#owner').val(),
+        status:   'New',
       };
-
-      var le = $.trim($('#le').val());
-      if ( le !== '') { // no update if leave it empty (may caused by datetimepicker control)
-        data.le = moment(le, 'YYYY-MM-DD HH:mm');
-      }
 
       var addAction = true;
       var url = '/add';
@@ -318,6 +347,8 @@
               '<a class="btn btn-primary" data-id="' + action._id + '" data-toggle="modal" data-target="#dlgModal"> <span class="glyphicon glyphicon-edit"></span> </a>'
             ] ).draw( false );
 
+            action_map[action._id] = action;
+
           } else {  // update
             //var tr = $('#tblAction tbody tr').eq(row);
             var tr = $('#' + dataId);
@@ -349,6 +380,63 @@
       });
 
     });  // end of onclick
+
+    /* --- keyboard shortcut --- */
+    $(document).keydown(function(e) {
+      console.log('key:' + e.which);
+
+      switch(e.which) {
+        case 65: // 'a' - add
+          if (e.ctrlKey) {
+            $('#dlgModal').modal('show');
+
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          break;
+
+        case 69: // 'e' - edit
+          if (e.ctrlKey && !($("#dlgModal").data('bs.modal') || {isShown: false}).isShown) {
+            $('#dlgModal').modal('show');
+          }
+          break;
+
+        case 68: // 'd' - delete
+          if (e.ctrlKey) {
+            // check is modal is show
+            if ( ($("#dlgModal").data('bs.modal') || {isShown: false}).isShown ) {
+              $('#deleteAction').trigger('click');
+            } else {
+              // TODO: delete selected item
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          break;
+
+        case 83: // 's' - save
+          if (e.ctrlKey && ($("#dlgModal").data('bs.modal') || {isShown: false}).isShown) {
+            $('#saveAction').trigger('click');
+
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          break;
+
+        case 191: // '/' - search
+          if (!($("#dlgModal").data('bs.modal') || {isShown: false}).isShown) {
+            $('.dataTables_filter input').focus();
+
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          break;
+
+        default:
+          break;
+      }
+    });
 
   });
 

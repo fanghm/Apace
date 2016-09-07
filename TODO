@@ -5,22 +5,25 @@ Display action
     eg: Filter: [select field] [=|<>|...] [select value]  // for date field, select date range to filter
 
 Keyboard shortcuts support
-  - 'a': add
-  - 'e': edit
-  - 'd': delete
-  - 'k/j' or up/down arrow: move up/down
-  - 'n/p' or page up/down: next/previous page
-  - For modal: 
-    - 'd': delete, 's': save, ESC: close modal
+  - '/': search [x]
+  - ctrl + 'a': add    [x]
+  - ctrl + 'e': edit   [ ]
+  - ctrl + 'd': delete [ ]
+  - 'k/j' or up/down arrow: select prev/next item [ ]
+  - 'n/p' or page up/down: page up/down           [ ]
+  - For modal:                                    [x]
+    - ctrl + 'd': delete
+    - ctrl + 's': save
+    - ESC: close modal
 
 
 Add action 
-  - Data validation
+  - Data validation [x]
   - Read action category/status definitions from backend/database, and allow to update from UI setting
   - Send email notification upon action creation
-  - Datetime picker for LE input
+  - Datetime picker for LE input [x]
 
-Update/Remove action
+Update/Remove action [x]
 Update action history with fixed date prefix and updater signature suffix
 
 LDAP authentitaion and store user info in session
@@ -36,13 +39,15 @@ Setting
   - category/status dictionary
   - user default filter expression like "{category: 'CIF meeting', status: 'ongoing'}"
 
-
+Others
+  - app logo    [x]
+  - favicon [x]
 
 
 Problems:
 ---------
-Add action modal dialog always loading with previous data
-The sequence number of new added item (may not be a problem)
+Add action modal dialog always loading with previous data    [x]
+The sequence number of new added item (may not be a problem) [ ]
 
 Done:
 ---------
