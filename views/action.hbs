@@ -23,8 +23,20 @@
 
 <div class="container">
   <img src="/images/logo.png" alt="Apace" height="85px" width="138px">
-  <span class="title"><sub>super-fast action tracker</sub></span>
+  <span class="title">
+    <sub>super-fast action tracker</sub>
+  </span>
+</div>
 
+<div class="tabbable tabs-right">
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab_main" data-toggle="tab">Main</a></li>
+    <li><a href="#tab_setting" data-toggle="tab">Setting</a></li>
+    <li><a href="#tab_help" data-toggle="tab">Help</a></li>
+  </ul>
+
+<div class="tab-content">
+  <div class="tab-pane active" id="tab_main">
   <p>
     <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#dlgModal">
       <span class="glyphicon glyphicon-plus"></span> Add an action item
@@ -63,10 +75,14 @@
     {{/each}}
     </tbody>
   </table>
-</div>
+  </div>
 
-<br>
-<div class="container">
+
+  <div class="tab-pane" id="tab_setting">
+    <p>TODO</p>
+  </div>
+
+  <div class="tab-pane" id="tab_help">
   <H4>Keyboard shortcuts:</H4>
   <ul>
     <li><kbd>/</kbd>: search</li>
@@ -75,6 +91,8 @@
     <li><kbd>ctrl</kbd> + <kbd>d</kbd>: delete</li>
     <li><kbd>ctrl</kbd> + <kbd>s</kbd>: save</li>
   </ul>
+  </div>
+</div>
 </div>
 
 <!-- Common modal for add/edit an action item-->
@@ -121,10 +139,22 @@
             <label class="radio-inline"><input type="radio" name="status" value='New'>New</label>
             <label class="radio-inline"><input type="radio" name="status" value='Ongoing'>Ongoing</label>
             <label class="radio-inline"><input type="radio" name="status" value='Done'>Done</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Cancelled'>Cancelled</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Blocked'>Blocked</label>
             <label class="radio-inline"><input type="radio" name="status" value='Suspended'>Suspended</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Blocked'>Blocked</label>
+            <label class="radio-inline"><input type="radio" name="status" value='Cancelled'>Cancelled</label>
           </div>
+
+          <!--div class="form-group" id="grp_status1">
+            <label for="optradio1">Status2:</label><br>
+            <div class="btn-group" data-toggle="buttons-radio">
+              <button type="button" class="btn btn-info">New</button>
+              <button type="button" class="btn btn-primary">Ongoing</button>
+              <button type="button" class="btn btn-success">Done</button>
+              <button type="button" class="btn btn-warning">Suspended</button>
+              <button type="button" class="btn btn-danger">Blocked</button>
+              <button type="button" class="btn btn-default">Cancelled</button>
+            </div>
+          </div-->
 
           <div class="form-group">
             <label for="owner">Owner:</label>
@@ -334,7 +364,7 @@
 
           // TODO: display inserted/updated item on current page, no scrolling to other page
           if (addAction) {
-            moment.locale('zh-cn');
+            //moment.locale('zh-cn');
 
             t.row.add( [
               '',
@@ -359,10 +389,10 @@
             // console.log('td title:' + tr.find('td:eq(1)').html());
 
             tr.find("td:nth-child(3)").html( action.category ); // col 3
-            tr.find("td:nth-child(3)").html( action.status );
-            tr.find("td:nth-child(3)").html( action.owner );
-            tr.find("td:nth-child(3)").html( moment(action.le).format('YYYY-MM-DD HH:mm') );
-            tr.find("td:nth-child(3)").html( moment(action.update_at).fromNow() );
+            tr.find("td:nth-child(4)").html( action.status );
+            tr.find("td:nth-child(5)").html( action.owner );
+            tr.find("td:nth-child(6)").html( moment(action.le).format('YYYY-MM-DD HH:mm') );
+            tr.find("td:nth-child(7)").html( moment(action.update_at).fromNow() );
 
             t.row(tr).invalidate().draw(false);
             //console.log('updated tr to:' + $('#' + dataId).html());  // TODO: undefined when not visible in current page
