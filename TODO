@@ -3,6 +3,18 @@ TODO:
 Display action
   - Add display filters: category, status...
     eg: Filter: [select field] [=|<>|...] [select value]  // for date field, select date range to filter
+  - Expand each item to display update history, and can add one more update from main UI conveniently
+
+Add action 
+  - Data validation [x]
+  - Read action category/status definitions from backend/database, and allow to update from setting
+  - Datetime picker for LE input [x]
+
+Update/Remove action
+  - Basic [x]
+  - Store update history as array, and display as list
+  - Add new update with fixed date prefix like '[2016/09/09]'
+      and updater's signature as suffix, like '/frank' (dependent on user authentication)
 
 Keyboard shortcuts support
   - '/': search [x]
@@ -16,32 +28,24 @@ Keyboard shortcuts support
     - ctrl + 's': save
     - ESC: close modal
 
-
-Add action 
-  - Data validation [x]
-  - Read action category/status definitions from backend/database, and allow to update from UI setting
-  - Send email notification upon action creation
-  - Datetime picker for LE input [x]
-
-Update/Remove action [x]
-Update action history with fixed date prefix and updater signature suffix
-
-LDAP authentitaion and store user info in session
-Permission control
-
-Provide permlink of each item (as mail link)
-
-SaaS
-
-Update logging/history
+Login and permission control
+  - LDAP authentitaion
+  - Store user info in session for personalized display (my actions, pagination setting, ...)
+  - Permission control: 
+    - admin can update global settings like category/status definitions, default pagination setting
 
 Setting
-  - category/status dictionary
+  - category/status definitions
+  - pagination setting
   - user default filter expression like "{category: 'CIF meeting', status: 'ongoing'}"
 
 Others
   - app logo    [x]
-  - favicon [x]
+  - favicon     [x]
+  - send mail notification upon action creation, and when due date is less than N days (configurable)
+  - Provide permlink of each action item (as mail link), can display/update separately (probably in a tab)
+  - Action update logging/history for audit?
+  - SaaS
 
 
 Problems:
@@ -49,5 +53,4 @@ Problems:
 Add action modal dialog always loading with previous data    [x]
 The sequence number of new added item (may not be a problem) [ ]
 
-Done:
----------
+
