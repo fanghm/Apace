@@ -3,7 +3,7 @@ var BaseModel = require("./base_model");
 var Schema    = mongoose.Schema;
 
 var UserSchema = new Schema({
-  uid: { type: Number },      // employeeNumber or uidNumber
+  uid: { type: Number, required: true }, // employeeNumber or uidNumber
   name: { type: String},      // nsnPreferredName + sn
   loginname: { type: String}, // nsnDomainId or uid
   // pass: { type: String },
@@ -16,7 +16,8 @@ var UserSchema = new Schema({
 
   // signature: { type: String },
   // profile: { type: String },
-  
+  dn: {type: String},         // for LDAP auth only
+
   is_block: {type: Boolean, default: false },  
   active: { type: Boolean, default: false },  // nsnStatus
 

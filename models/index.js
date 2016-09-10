@@ -13,5 +13,7 @@ mongoose.connect(config.db, {
 
 // models
 require('./action');
+require('./user');
 
-exports.Action = mongoose.model('Action');
+exports.Action  = mongoose.model('Action');
+exports.User    = mongoose.model('User');

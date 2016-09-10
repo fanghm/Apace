@@ -4,6 +4,7 @@ Display action
   - Add display filters: category, status...
     eg: Filter: [select field] [=|<>|...] [select value]  // for date field, select date range to filter
   - Expand each item to display update history, and can add one more update from main UI conveniently
+  - Load data on demand when switching tabs
 
 Add action 
   - Data validation [x]

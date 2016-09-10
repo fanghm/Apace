@@ -39,4 +39,7 @@ jspm_packages
 # auto-generated css file
 public/stylesheets/style.css
 
+# config file
+config.js
+
 

@@ -1,9 +1,14 @@
 var express = require('express');
-var router = express.Router();
 var action = require('../controllers/action');
+var sign = require('../controllers/sign');
+
+var router = express.Router();
 
 router.get('/', action.index);
 router.post('/add', action.add);
 router.put('/update/:id', action.update);
 router.delete('/delete/:id', action.delete);
+
+router.post('/login', sign.login);
+
 module.exports = router;
