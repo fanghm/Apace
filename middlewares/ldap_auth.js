@@ -1,14 +1,13 @@
 'use strict';
-
 var ldap = require('ldapjs');
 var config = require('../config');
+
 var noop = function() {};
 
 var get_opt = function(uid) {
-
-  var re_uid = /^[1-9]\d{7}$/;
+  var re_uid  = /^[1-9]\d{7}$/;
   var re_mail = /[\w.]+@nokia.com$/;
-  var filter = '';
+  var filter  = '';
 
   if (re_uid.test(uid)) {
     filter = 'uidNumber=' + uid;
@@ -18,7 +17,6 @@ var get_opt = function(uid) {
     filter = 'uid=' + uid;
   }
   
-  console.log("filter: " + filter);
   return {
     filter: filter,
     scope: 'sub'
@@ -27,7 +25,8 @@ var get_opt = function(uid) {
 
 module.exports = {
 
-  auth: function(dn, password, callback) {
+  authenticate: function(dn, password, callback) {
+    //console.log("auth dn: " + dn + ", pwd: " + password);
     callback = callback || noop;
 
     var client = ldap.createClient({
@@ -35,7 +34,8 @@ module.exports = {
     });
 
     client.bind(dn, password, function(err) {
-      return callback(err);
+      client.unbind();
+      return callback(err); // caller is responsible for checking err
     });
   },
 
@@ -56,6 +56,7 @@ module.exports = {
         var entrys = [];
 
         if (err) {
+          client.unbind();
           return callback(err);
         }
 
@@ -64,18 +65,20 @@ module.exports = {
         });
 
         response.on('end', function() {
+          client.unbind();
+
           if (entrys.length === 0) {
-            return callback(Error('No such uid: ' + uid), null);
+            return callback(Error('No such user: ' + uid), null);
           }
 
           var entry = entrys[0];
-          console.log("LDAP user:" + JSON.stringify(entry));
-
+          //console.log("Found LDAP user:" + JSON.stringify(entry));
           return callback(null, entry);
         });
 
         response.on('error', function(error) {
-          console.log('LDAP search error', error.messsage);
+          client.unbind();
+          console.log('LDAP search error', error.message);
           return callback(error);
         });
       });

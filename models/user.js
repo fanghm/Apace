@@ -19,7 +19,7 @@ var UserSchema = new Schema({
   dn: {type: String},         // for LDAP auth only
 
   is_block: {type: Boolean, default: false },  
-  active: { type: Boolean, default: false },  // nsnStatus
+  active: { type: Boolean, default: true },  // nsnStatus
 
   receive_reply_mail: {type: Boolean, default: false },
   receive_at_mail: { type: Boolean, default: false },
@@ -37,7 +37,7 @@ UserSchema.virtual('isTdd').get(function () {
 
 UserSchema.index({loginname: 1}, {unique: true});
 UserSchema.index({email: 1}, {unique: true});
-UserSchema.index({uid: 1});
+UserSchema.index({uid: 1}, {unique: true});
 UserSchema.index({team: 1});
 
 mongoose.model('User', UserSchema);

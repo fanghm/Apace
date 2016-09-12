@@ -1,7 +1,5 @@
-
 var _       = require('lodash');
 var User    = require('../models').User;
-var config  = require('../config');
 var ldap    = require('../middlewares/ldap_auth');
 
 exports.login = function (req, res, next) {
@@ -9,14 +7,13 @@ exports.login = function (req, res, next) {
   var pass  = _.trim(req.body.pass);
 
   if (!uid || !pass) {
-    console.log("uid: " + uid + ", pass: " + pass);
     return res.status(200).json({error: 'Bad uid or pass.'});
   }
 
   auth(uid, pass, function(err, user) {
     if (!err) {
-      req.session.user = user;
-      return res.status(200).json({user: user});
+      // TODO: req.session.user = user;
+      return res.status(200).json(user);
     } else {
       return res.status(200).json({error: err.message});
     }
@@ -25,35 +22,44 @@ exports.login = function (req, res, next) {
 };
 
 function auth(uid, pass, cb) {
+  // TODO: use multiple possible query conditions, maybe uid, email, loginname
   User.findOne({uid: uid}, function(err, user) {
     if (user) {
-      ldap.auth(user.dn, pass, function(error) {
+      // console.log("User exists in db: " + JSON.stringify(user));
+      var dn = "employeeNumber=" + user.uid + ",ou=Internal,ou=People,o=NSN";
+      ldap.authenticate(dn, pass, function(error) {
         if(error) {
-          return cb({error: 'Login failed: ' + error.message});
+          return cb(error);
         } else {
           return cb(null, user);
         }
       });
+
+      return;
     }
 
-    // find error or user not in db
+    // User not in db
     ldap.search(uid, function(err, entry) {
-      if (err) return cb(err);
+      if (err) {
+        console.log("Error in LDAP search: " + err.message);
+        return cb(err);
+      }
 
       var user = {
-        uid:        entry.uid,
-        dn:         entry.dn,
+        uid:        entry.uidNumber,  // or employeeNumber
         loginname:  entry.uid,
-        name:       entry.cn,
-        email:      entry.mail,
-        mobile:     entry.mobile,
-         
+        email:      entry.mail,       // or nsnPrimaryEmailAddress
+        name:       entry.cn,         // or gecos
+        // and more...
       };
 
       User.create(user, function(err, created) {
-        if (err) return cb(err);
+        if (err) {
+          return cb(err);
+        }
 
-        ldap.auth(entry.dn, pass, function(error) {
+        var dn = "employeeNumber=" + entry.uid + ",ou=Internal,ou=People,o=NSN";
+        ldap.authenticate(dn, pass, function(error) {
           if(error) {
             return cb(error);
           } else {

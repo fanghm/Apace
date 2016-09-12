@@ -241,6 +241,13 @@ $(document).ready( function () {
 
   });  // end of onclick
 
+  // tab operation
+  $('#li_my').hide();
+
+  function activaTab(tab){
+      $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+  };
+
   $('#btnLogin').on( 'click', function () {
     var data = {
       uid: $('#uid').val().trim(),
@@ -254,9 +261,22 @@ $(document).ready( function () {
       data: JSON.stringify(data),
       contentType: 'application/json',
 
-      success: function(obj, textStatus, jQxhr) {
-        console.log('returned: ' + JSON.stringify(obj));
-        console.log( 'ok' );
+      success: function(user, textStatus, jQxhr) {
+        console.log('Auth succeed: ' + JSON.stringify(user));
+
+        // $('.nav-tabs li:last').before('<li class="pull-right"> <a href="#my" data-toggle="tab">' + user.name 
+        //   + '<button class="close" type="button" title="Remove">×</button> </a> </li>');
+        //$('.tab-content').append('<div class="tab-pane" id="my"><p>welcome</p></div>');
+
+        //hideTab('login');
+        //activaTab('my');
+        //$('#login').hide();
+
+        $('#li_my a label').html(user.name);
+        $('#li_my').show();
+        $('#li_my a').click();
+
+        $('#li_login').hide();
       },
 
       error: function( jqXhr, textStatus, errorThrown ) {
@@ -264,6 +284,21 @@ $(document).ready( function () {
       }
     });
 
+  });
+
+  $('.nav-tabs').on('click', '.close', function() {
+    var yes = confirm('Log out?');
+    if (yes) {
+      $('#li_my').hide();
+      $('#li_login').show();
+      //$('#li_login a').click();
+      //activaTab('login');
+
+      //display main tab
+      var tabFirst = $('.nav-tabs a:first');
+      //tabFirst.tab('show');
+      tabFirst.click();
+    }
   });
 
 });
