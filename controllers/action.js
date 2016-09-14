@@ -1,7 +1,9 @@
 var Action       = require('../models').Action;
+var User         = require('../models').User;
 var config       = require('../config');
 var EventProxy   = require('eventproxy');
 var validator    = require('validator');
+var _            = require('lodash');
 
 var getActionsByQuery = function (query, opt, callback) {
   query.deleted = false;
@@ -19,23 +21,52 @@ var getActionsByQuery = function (query, opt, callback) {
   });
 };
 
+var getAllNames = function (callback) {
+  User.find({}, {name:1, _id:0}, {}, function (err, names) {
+    if (err) {
+      return callback(err);
+    }
+
+    if (names.length === 0) {
+      return callback(null, []);
+    }
+
+    return callback(null, names);
+  });
+};
 
 exports.index = function(req, res, next) {
+  var ep = EventProxy.create();
+  ep.fail(next);
 
   getActionsByQuery({}, {}, function (err, actions) {
     if (err) {
       return next(err);
     }
+    ep.emit('actions', actions);
+  });
 
+  getAllNames(function (err, names) {
+    if (err) {
+      return next(err);
+    }
+    ep.emit('names', names);
+  });
+
+  ep.all('actions', 'names', function (actions, names) {
     // convert obj array to map for the convenience of fetching data with _id in client js
-    var obj = {};
+    var action_map = {};
     actions.forEach(function ( action ) {
-      obj[ action._id ] = action;
+      action_map[ action._id ] = action;
     });
+
+    var name_list = _.map(names, 'name');
+    console.log("name_list: " + JSON.stringify(name_list));
 
     var data = {
       actions: actions,
-      json: JSON.stringify(obj) // for client js access only
+      action_map: JSON.stringify(action_map),
+      name_list: JSON.stringify(name_list),
     };
 
     res.render('action', data);

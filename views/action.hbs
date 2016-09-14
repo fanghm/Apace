@@ -17,10 +17,12 @@
   <script type="text/javascript" src="/libs/jquery-datetimepicker/jquery.datetimepicker.full.min.js"></script>
   <script type="text/javascript" src="/libs/moment-with-locales.min.js"></script>
   <script type="text/javascript" src="/libs/lodash.js"></script>
+  <script type="text/javascript" src="/libs/jquery.autocomplete.min.js"></script>
 </head>
 <body>
 <script type="text/javascript">
-  var action_map = {{{ json }}};
+  var action_map = {{{ action_map }}};
+  var name_list = {{{ name_list }}};  // for auto-complete of AP owners
 </script>
 
 <div class="container">
@@ -260,6 +262,7 @@
 
 <script type="text/javascript" src="/javascripts/apace.js"></script>
 <script type="text/javascript" src="/javascripts/kbd.js"></script>
+<script type="text/javascript" src="/javascripts/autocomplete.js"></script>
 
 </body>
 </html>

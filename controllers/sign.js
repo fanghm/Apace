@@ -26,7 +26,14 @@ function auth(uid, pass, cb) {
   User.findOne({uid: uid}, function(err, user) {
     if (user) {
       // console.log("User exists in db: " + JSON.stringify(user));
-      var dn = "employeeNumber=" + user.uid + ",ou=Internal,ou=People,o=NSN";
+      var dn = '';
+      if (user.hasOwnProperty('uid')) {
+        dn = "employeeNumber=" + user.uid;
+      } else if (user.hasOwnProperty('email')) {
+        var dn = "mail=" + user.email;
+      }
+      dn += ",ou=Internal,ou=People,o=NSN";
+
       ldap.authenticate(dn, pass, function(error) {
         if(error) {
           return cb(error);
