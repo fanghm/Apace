@@ -11,4 +11,6 @@ router.delete('/delete/:id', action.delete);
 
 router.post('/login', sign.login);
 
+router.get('*', action.route);
+
 module.exports = router;

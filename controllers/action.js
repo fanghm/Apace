@@ -60,6 +60,12 @@ exports.add = function(req, res, next) {
   }
 
   act.create_at = act.update_at = Date.now();
+  act.history.push({
+    info: 'first created',
+    by:   'someone',  // todo: get username from session
+    at:   act.create_at
+  });
+
   // act.creator = req.session.user._id;
   console.log("add act: " + JSON.stringify(act));
   act.save(function (err, action, numAffected) {
@@ -113,7 +119,9 @@ exports.update = function(req, res, next) {
     // update
     for(var prop in req.body) {
       if (Object.getPrototypeOf(action).hasOwnProperty(prop)) {
-        if (typeof req.body[prop] === 'string') {
+        if (prop === 'history') { // append to array
+          action[prop] = action[prop].concat(req.body[prop]);
+        } else if (typeof req.body[prop] === 'string') {
           action[prop] = validator.trim(req.body[prop]);
         } else {
           action[prop] = req.body[prop];
@@ -132,4 +140,24 @@ exports.update = function(req, res, next) {
     });
 
   });
+}
+
+// handle shortcut routes with in-built filters, for quick access
+exports.route = function(req, res, next) {
+  var url = validator.trim(req.url).toLowerCase();
+  switch(url) {
+    case 'cif':
+    break;
+
+    case 'rca':
+    break;
+
+    case 'ft1':
+    break;
+
+  default:
+    break;
+  }
+
+  return res.status(200).json({url: url});
 }

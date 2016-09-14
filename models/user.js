@@ -14,7 +14,7 @@ var UserSchema = new Schema({
   team: { type: String},      // nsnTeamName
   biz_unit: { type: String }, // ou
 
-  // signature: { type: String },
+  // signature: { type: String }, // for displaying in update history
   // profile: { type: String },
   dn: {type: String},         // for LDAP auth only
 

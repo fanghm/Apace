@@ -16,6 +16,7 @@
   <script type="text/javascript" charset="utf8" src="/libs/dataTables/js/jquery.dataTables.js"></script>
   <script type="text/javascript" src="/libs/jquery-datetimepicker/jquery.datetimepicker.full.min.js"></script>
   <script type="text/javascript" src="/libs/moment-with-locales.min.js"></script>
+  <script type="text/javascript" src="/libs/lodash.js"></script>
 </head>
 <body>
 <script type="text/javascript">
@@ -23,7 +24,7 @@
 </script>
 
 <div class="container">
-  <img src="/images/logo.png" alt="Apace" height="85px" width="138px">
+  <a href="/"><img src="/images/logo.png" alt="Apace" height="85px" width="138px"></a>
   <span class="title">
     <sub>super-fast action tracker</sub>
   </span>
@@ -124,7 +125,7 @@
         <form class="form-signin">
           <h3 class="form-signin-heading">Please sign in</h3>
           <label for="uid" class="sr-only">Employee ID</label>
-          <input type="text" id="uid" class="form-control" placeholder="Enter your 8-digit employee ID" value="61403612" required autofocus>
+          <input type="text" id="uid" class="form-control" placeholder="Any Nokia account" required autofocus>
           <label for="pass" class="sr-only">Password</label>
           <input type="password" id="pass" class="form-control" placeholder="Password" required>
           <div class="checkbox">
@@ -134,13 +135,14 @@
           </div>
           <button id="btnLogin" class="btn btn-primary btn-block" type="submit">Sign in</button>
         </form>
+        <div class="alert alert-warning" role="alert"></div>
       </div> <!-- /container -->
     </div>
 
     <div class="tab-pane" id="my">
       <div class="panel panel-info" style="margin: 10px">
         <div class="panel-heading">
-          <h3 class="panel-title">My actions</h3>
+          <h3 class="panel-title">Actions on me</h3>
         </div>
         <div class="panel-body">
           <p>TODO</p>
@@ -174,13 +176,13 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="title">Action/Task:</label>
+            <label for="title">Title:</label>
             <input type="text" class="form-control" id="title" required/>
           </div>
 
           <div class="form-group">
             <label for="desc">Description:</label>
-            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:80px;" id="desc"></textarea>
+            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:60px;" id="desc"></textarea>
           </div>
 
           <div class="form-group">
@@ -195,8 +197,18 @@
           </div>
 
           <div class="form-group">
+            <label for="ref">Reference:</label>
+            <input type="text" class="form-control" id="ref" placeholder="PR#, Feature ID, meeting, etc."/>
+          </div>
+
+          <div class="form-group">
+            <label for="owner">Owner:</label>
+            <input type="text" class="form-control" id="owner" required/>
+          </div>
+
+          <div class="form-group">
             <label for="le">LE:</label>
-            <input type="text" class="form-control" id="le"/>
+            <input type="text" class="form-control" id="le" required/>
           </div>
 
           <div class="form-group" id="grp_status" style="display:none;">
@@ -221,14 +233,17 @@
             </div>
           </div-->
 
-          <div class="form-group">
-            <label for="owner">Owner:</label>
-            <input type="text" class="form-control" id="owner"/>
-          </div>
-
           <div class="form-group" id="grp_history" style="display:none;">
             <label for="history">History:</label>
-            <textarea class="form-control" style="resize: vertical;max-height:400px; min-height:100px;" id="history"></textarea>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Date/author will be added as prefix automatically" id="history">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+              </span>
+            </div><!-- /input-group -->
+
+            <ul class="list-group">
+            </ul>
           </div>
 
         </form>

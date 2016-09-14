@@ -15,5 +15,25 @@ kbd {
 }
 
 #nav-tabs .close{
-  margin-left: 7px;
+  //margin-left: 7px;
+  display:none;
+  cursor:pointer;
+  position:absolute;
+  right: 6px;
+  top: 8px;
+  color: red;
+}
+
+.nav-tabs > li:hover > button {
+    display: inline-block;
+}
+
+// override default bootstrap style to reduce list height
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 5px 5px; /* adjust here: 5/15 */
+    margin-bottom: -1px;
+    border: 1px solid #ddd;
+    line-height: 1em /* set to text height */
 }

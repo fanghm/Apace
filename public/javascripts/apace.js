@@ -14,7 +14,7 @@ $(document).ready( function () {
 
   $('#le').datetimepicker({
     //timepicker: false,
-    defaultTime:'17:00',
+    defaultTime:'12:00',
     closeOnDateSelect:true,
     format: 'Y/m/d H:i',
     weeks: true,
@@ -47,6 +47,14 @@ $(document).ready( function () {
     $('#title').focus();
   });
 
+  function genUpdateHtml(item) {
+    return '<li class="list-group-item">' + 
+            '[' + moment(item.at).format('YYYY/MM/DD') + '] ' + 
+            item.by + ': ' + 
+            item.info +
+            '</li>';
+  }
+
   // Triggered when modal is about to be shown
   $('#dlgModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);  // Button that triggered the modal
@@ -66,6 +74,7 @@ $(document).ready( function () {
       $(".modal-body #title").val("");
       $(".modal-body #desc").val("");
       $('.modal-body #category').val("");
+      $('.modal-body #ref').val("");
       $(".modal-body #le").val("");
       $(".modal-body #owner").val("");
       //$("input[name=status][value='New']").attr('checked', 'checked');
@@ -94,15 +103,40 @@ $(document).ready( function () {
       $(".modal-body #title").val( action_map[dataId].title );
       $(".modal-body #desc").val( action_map[dataId].desc );
       $('.modal-body #category').val( action_map[dataId].category );
+      $('.modal-body #ref').val( action_map[dataId].ref );
       $('.modal-body #le').val( moment(action_map[dataId].le).format('YYYY/MM/DD HH:mm') );
       $(".modal-body #owner").val( action_map[dataId].owner );
-
-      //console.log("action_map[dataId].history: " + action_map[dataId].history);
-      $(".modal-body #history").val( action_map[dataId].history );
       $("input[name=status][value='" + action_map[dataId].status + "']").prop("checked", true);
 
+      // Sort by date desc, only display first 3
+      // TODO: add button to expand more
+      $(".modal-body #grp_history ul").html('');  // clear first
+      _.takeRight(_.sortBy( action_map[dataId].history, 'at' ), 3).reverse().forEach(function(item) {
+        $(".modal-body #grp_history ul").append(genUpdateHtml(item));
+      });
     }
 
+  });
+
+  // add a update history
+  $('#grp_history button').on( 'click', function () {
+    var item = {
+      info: $(".modal-body #history").val(),
+      by: 'frank',
+      at: Date.now(),
+      status: $('input[name=status]:checked').val()
+    };
+
+    $(".modal-body #grp_history ul").prepend(genUpdateHtml(item));
+    $(".modal-body #history").val('');
+
+    var dataId = $('#saveAction').data("id");
+
+    // for posting update to server
+    if (!action_map[dataId].hasOwnProperty('updates')) {
+      action_map[dataId]['updates'] = [];
+    }
+    action_map[dataId]['updates'].push(item);
   });
 
   // delete an item
@@ -143,7 +177,8 @@ $(document).ready( function () {
     // data validation
     var allowSubmit = true;
     $.each($('form input:text'), function(index, formField) {
-      if($(formField).val().trim().length == 0) {
+      if( $(formField).val().trim().length == 0 
+        && !_.includes(['history', 'ref'], $(formField).attr("id")) ) {
         alert( 'Field cannot be empty: ' + $(formField).attr("id") );
         allowSubmit = false;
         return false;
@@ -163,6 +198,7 @@ $(document).ready( function () {
       title:    $('#title').val(),
       desc:     $('#desc').val(),
       category: $('#category').val(),
+      ref:      $('#ref').val(),
       le:       moment( $('#le').val().trim() , 'YYYY-MM-DD HH:mm'),
       owner:    $('#owner').val(),
       status:   'New',
@@ -177,8 +213,11 @@ $(document).ready( function () {
       url = '/update/' + dataId;
       method = 'PUT';
 
-      data.history = $('#history').val();
       data.status = $('input[name=status]:checked').val();
+
+      if (action_map[dataId].hasOwnProperty('updates')) {
+        data.history = action_map[dataId].updates;
+      }
     }
 
     $.ajax({
@@ -244,7 +283,7 @@ $(document).ready( function () {
   // tab operation
   $('#li_my').hide();
 
-  function activaTab(tab){
+  function activaTab(tab) {
       $('.nav-tabs a[href="#' + tab + '"]').tab('show');
   };
 
@@ -263,20 +302,28 @@ $(document).ready( function () {
 
       success: function(user, textStatus, jQxhr) {
         console.log('Auth succeed: ' + JSON.stringify(user));
+        if (user.hasOwnProperty('error')) {
+          $('#login .alert-warning').html('<strong>Error:<strong> bad account or password!')
+          $('#login .alert-warning').show();
+        } else {
+          $('#login .alert-warning').hide();
 
-        // $('.nav-tabs li:last').before('<li class="pull-right"> <a href="#my" data-toggle="tab">' + user.name 
-        //   + '<button class="close" type="button" title="Remove">×</button> </a> </li>');
-        //$('.tab-content').append('<div class="tab-pane" id="my"><p>welcome</p></div>');
+          // $('.nav-tabs li:last').before('<li class="pull-right"> <a href="#my" data-toggle="tab">' + user.name 
+          //   + '<button class="close" type="button" title="Remove">×</button> </a> </li>');
+          //$('.tab-content').append('<div class="tab-pane" id="my"><p>welcome</p></div>');
 
-        //hideTab('login');
-        //activaTab('my');
-        //$('#login').hide();
+          //hideTab('login');
+          //activaTab('my');
+          //$('#login').hide();
+          // $('a[href="' + window.location.hash + '"]').trigger('click');
 
-        $('#li_my a label').html(user.name);
-        $('#li_my').show();
-        $('#li_my a').click();
+          $('#li_my a label').html(user.name);
+          $('#li_my').show();
+          $('#li_my a').click();
 
-        $('#li_login').hide();
+          // TODO: reset password input
+          $('#li_login').hide();
+        }
       },
 
       error: function( jqXhr, textStatus, errorThrown ) {
@@ -287,18 +334,15 @@ $(document).ready( function () {
   });
 
   $('.nav-tabs').on('click', '.close', function() {
-    var yes = confirm('Log out?');
-    if (yes) {
-      $('#li_my').hide();
-      $('#li_login').show();
-      //$('#li_login a').click();
-      //activaTab('login');
+    $('#li_my').hide();
+    $('#li_login').show();
+    //$('#li_login a').click();
+    //activaTab('login');
 
-      //display main tab
-      var tabFirst = $('.nav-tabs a:first');
-      //tabFirst.tab('show');
-      tabFirst.click();
-    }
+    //display main tab
+    var tabFirst = $('.nav-tabs li a:first');
+    //tabFirst.tab('show');
+    tabFirst.click();
   });
 
 });

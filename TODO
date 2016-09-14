@@ -10,12 +10,15 @@ Add action
   - Data validation [x]
   - Read action category/status definitions from backend/database, and allow to update from setting
   - Datetime picker for LE input [x]
+  - Input assistence for owner field: either auto-complete, or search
+  - Verify owner is valid (for sending email notification)
+  - Display update history in list [x]
 
 Update/Remove action
   - Basic [x]
-  - Store update history as array, and display as list
-  - Add new update with fixed date prefix like '[2016/09/09]'
-      and updater's signature as suffix, like '/frank' (dependent on user authentication)
+  - Store update history as array, and display as list [x]
+  - Add new update with fixed prefix of date and author's name, like '[2016/09/09] frank: '
+  (partly dependent on user authentication)
 
 Keyboard shortcuts support
   - '/': search [x]
@@ -30,7 +33,7 @@ Keyboard shortcuts support
     - ESC: close modal
 
 Login and permission control
-  - LDAP authentitaion
+  - LDAP authentication [x]
   - Store user info in session for personalized display (my actions, pagination setting, ...)
   - Permission control: 
     - admin can update global settings like category/status definitions, default pagination setting
@@ -47,6 +50,10 @@ Others
   - Provide permlink of each action item (as mail link), can display/update separately (probably in a tab)
   - Action update logging/history for audit?
   - SaaS
+  - handle shortcut routes with in-built filters, for quick access, like /cif -> {category: 'CIF meeting'}
+
+Refactoring
+  - put modal html into separate file
 
 
 Problems:
