@@ -1,6 +1,7 @@
 var Action       = require('../models').Action;
 var User         = require('../models').User;
 var config       = require('../config');
+var mailer       = require('../middlewares/mail');
 var EventProxy   = require('eventproxy');
 var validator    = require('validator');
 var _            = require('lodash');
@@ -104,6 +105,13 @@ exports.add = function(req, res, next) {
       console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(act));
       return res.status(200).json({error: err.message});
     } else {
+      mailer.sendMail(config.email4test, function(err, info) {
+        if (err) {
+          console.log("Error in sending email: " + err.message);
+        } else {
+          console.log("An email is sent to action owner: " + JSON.stringify(info));
+        }
+      });
       return res.status(200).json(action);
     }
 
