@@ -4,29 +4,9 @@ var config = require('../config');
 
 var noop = function() {};
 
-var get_opt = function(uid) {
-  var re_uid  = /^[1-9]\d{7}$/;
-  var re_mail = /[\w.]+@nokia.com$/;
-  var filter  = '';
-
-  if (re_uid.test(uid)) {
-    filter = 'uidNumber=' + uid;
-  } else if (re_mail.test(uid)) {
-    filter = 'mail=' + uid;
-  } else {
-    filter = 'uid=' + uid;
-  }
-  
-  return {
-    filter: filter,
-    scope: 'sub'
-  };
-};
-
 module.exports = {
-
   authenticate: function(dn, password, callback) {
-    //console.log("auth dn: " + dn + ", pwd: " + password);
+    console.log("auth dn: " + dn);
     callback = callback || noop;
 
     var client = ldap.createClient({
@@ -39,7 +19,7 @@ module.exports = {
     });
   },
 
-  search: function(uid, callback) {
+  search: function(filter, callback) {
     callback = callback || noop;
 
     var client = ldap.createClient({
@@ -51,7 +31,11 @@ module.exports = {
         return callback(err);
       }
 
-      var opt = get_opt(uid);
+      var opt = {
+        filter: filter,
+        scope: 'sub'
+      };
+
       client.search('', opt, function(err, response) {
         var entrys = [];
 
@@ -68,7 +52,7 @@ module.exports = {
           client.unbind();
 
           if (entrys.length === 0) {
-            return callback(Error('No such user: ' + uid), null);
+            return callback(Error('No such user whose ' + filter), null);
           }
 
           var entry = entrys[0];

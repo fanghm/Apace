@@ -5,8 +5,8 @@ var config     = require('../config');
 exports.sendMail = function(to, cb) {
   var mail = {
     from: config.email4test,
-    to: to,
-    subject: "Your action is due soon",
+    to: config.email4test,  // TODO: change before formal deployment
+    subject: "Your action is due soon..." + to,
     text: "This is an email from Apace App, do not reply it.",
     html: "<p>Pls visit <strong>Apace</strong> to view/update the actions on you."
   };

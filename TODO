@@ -3,21 +3,23 @@ TODO:
 Display action
   - Add display filters: category, status...
     eg: Filter: [select field] [=|<>|...] [select value]  // for date field, select date range to filter
-  - Expand each item to display update history, and can add one more update from main UI conveniently
+  - Expand each item to display update history, and can add a update from main UI conveniently
   - Load data on demand when switching tabs
+  * Provide permlink of each action item (for mail link), can display/update separately (probably in a tab)
 
-Add action 
+Add action
   - Data validation [x]
-  - Read action category/status definitions from backend/database, and allow to update from setting
+  * Read action category/status definitions from backend/database, and allow to update from setting
   - Datetime picker for LE input [x]
-  - Input assistence for owner field: either auto-complete, or search
-  - Verify owner is valid (for sending email notification)
+  - Input assistence for owner field: either auto-complete, or search [x]
+  * Verify owner is valid (for sending email notification)
   - Display update history in list [x]
+  - Apply different CSS on field labels to indicate non-mandatory fields
 
 Update/Remove action
   - Basic [x]
   - Store update history as array, and display as list [x]
-  - Add new update with fixed prefix of date and author's name, like '[2016/09/09] frank: '
+  - Add new update with fixed prefix of date and author's name, like '[2016/09/09] frank: ' [x]
   (partly dependent on user authentication)
 
 Keyboard shortcuts support
@@ -34,23 +36,29 @@ Keyboard shortcuts support
 
 Login and permission control
   - LDAP authentication [x]
-  - Store user info in session for personalized display (my actions, pagination setting, ...)
+  * Store user info in session for personalized display (my actions, pagination setting, ...)
   - Permission control: 
     - admin can update global settings like category/status definitions, default pagination setting
+  - Login error removable with bootstrap alert
 
 Setting
   - category/status definitions
   - pagination setting
   - user default filter expression like "{category: 'CIF meeting', status: 'ongoing'}"
 
+Mail Notification
+  - upon action creation [x]
+  - when due date is less than N(configurable) days (CC action creator)
+  - when no update in N(configurable) days (CC action creator)
+  - when owner changes (CC original owner)
+  - to author: when status changed to Done/Blocked/... (configurable)
+
 Others
   - app logo    [x]
   - favicon     [x]
-  - send mail notification upon action creation, and when due date is less than N days (configurable)
-  - Provide permlink of each action item (as mail link), can display/update separately (probably in a tab)
   - Action update logging/history for audit?
   - SaaS
-  - handle shortcut routes with in-built filters, for quick access, like /cif -> {category: 'CIF meeting'}
+  - handle shortcut routes with in-built filters, for quick access, like "/cif" -> {category: 'CIF meeting'}
 
 Refactoring
   - put modal html into separate file
@@ -60,5 +68,6 @@ Problems:
 ---------
 Add action modal dialog always loading with previous data    [x]
 The sequence number of new added item (may not be a problem) [ ]
+Main tab not shown correctly user upon logout                [ ]
 
 

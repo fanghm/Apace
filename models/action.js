@@ -8,10 +8,10 @@ var ActionSchema = new Schema({
 
   category:   { type: String, required: true,
                 enum: ['RCA/EDA', 'Retrospective', 'CIF meeting', 'Internal Audit', 'Other'] },
-  ref:        { type: String }, // reference: PR#, Feature ID, etc
+  ref:        { type: String }, // reference: optional, PR#, Feature ID, etc
   team:       { type: String }, // optional, for team APs
 
-  owner:      { type: String },
+  owner:      { type: String, required: true },
   le:         { type: Date, required: true },   // latest estimation
 
   status:     { type: String, required: true,
@@ -25,6 +25,7 @@ var ActionSchema = new Schema({
 });
 
 ActionSchema.plugin(BaseModel);
+
 ActionSchema.index({status: 1});
 ActionSchema.index({category: 1, create_at: -1});
 
