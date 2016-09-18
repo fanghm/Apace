@@ -127,9 +127,13 @@ $(document).ready( function () {
 
   // add a update history
   $('#grp_history button').on( 'click', function () {
+    if ($(".modal-body #history").val().trim().length === 0) {
+      return;
+    }
+
     var item = {
       info: $(".modal-body #history").val(),
-      by: 'frank',
+      by: 'frank',  // TODO: get user name from session
       at: Date.now(),
       status: $('input[name=status]:checked').val()
     };
@@ -184,7 +188,7 @@ $(document).ready( function () {
     // data validation
     var allowSubmit = true;
     $.each($('#dlgModal form input:text'), function(index, formField) {
-      if( $(formField).val().trim().length == 0 
+      if( $(formField).val().trim().length === 0
         && !_.includes(['history', 'ref'], $(formField).attr("id")) ) {
         alert( 'Field cannot be empty: ' + $(formField).attr("id") );
         allowSubmit = false;
@@ -192,22 +196,32 @@ $(document).ready( function () {
       }
     });
 
-    if ( $('#category').val().trim().length == 0 ) {
-      alert( 'Field cannot be empty: ' + 'category' );
-      allowSubmit = false;
-    }
-
     if (!allowSubmit) {
       return false;
     }
 
+    if ( $('#category').val().trim().length === 0 ) {
+      alert( 'Field cannot be empty: category' );
+      return false;
+    }
+
+    var owner = $('#owner').val().trim();
+    if (!_.includes(name_list, owner)) {
+      // name not in list, then it must be a valid email
+      var re_mail = /[\w.]+@nokia.com$/;
+      if (!re_mail.test(owner)) {
+        alert("Unknown owner. \nWhen user name not prompted automatically, pls provide his email.");
+        return false;
+      }
+    }
+
     var data = {
-      title:    $('#title').val(),
-      desc:     $('#desc').val(),
+      title:    $('#title').val().trim(),
+      desc:     $('#desc').val().trim(),
       category: $('#category').val(),
-      ref:      $('#ref').val(),
-      le:       moment( $('#le').val().trim() , 'YYYY-MM-DD HH:mm'),
-      owner:    $('#owner').val(),
+      ref:      $('#ref').val().trim(),
+      le:       moment( $('#le').val().trim(), 'YYYY-MM-DD HH:mm'),
+      owner:    $('#owner').val().trim(),
       status:   'New',
     };
 
