@@ -11,4 +11,4 @@
   * set env variable: `export NODE_ENV='production'`
 
 * Import user data (for auto-complete in name inputing)
-    mongoimport --db <db_name> --collection users --jsonArray < SolutionNames.csv
+  * `mongoimport --db <db_name> --collection users --jsonArray < names.csv`

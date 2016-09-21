@@ -94,18 +94,17 @@ exports.add = function(req, res, next) {
   act.create_at = act.update_at = Date.now();
   act.history.push({
     info: 'first created',
-    by:   'someone',  // todo: get username from session
+    by:   act.author,
     at:   act.create_at
   });
 
-  // act.creator = req.session.user._id;
   console.log("add act: " + JSON.stringify(act));
   act.save(function (err, action, numAffected) {
     if (err) {
       console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(act));
       return res.status(200).json({error: err.message});
     } else {
-      mailer.sendMail(config.email4test, function(err, info) {
+      mailer.sendMail(config.test_email, function(err, info) {  // TODO: use owner's email
         if (err) {
           console.log("Error in sending email: " + err.message);
         } else {

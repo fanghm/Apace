@@ -14,6 +14,8 @@ mongoose.connect(config.db, {
 // models
 require('./action');
 require('./user');
+require('./setting');
 
 exports.Action  = mongoose.model('Action');
 exports.User    = mongoose.model('User');
+exports.Setting = mongoose.model('Setting');

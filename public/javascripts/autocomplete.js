@@ -1,6 +1,9 @@
   $( function() {
-    // var availableTags = ['Fang Frank', 'Li Wei', 'Dong Riano', 'Jin Shuqiang', 'Ma Cassie' ];
-    $( "#owner" ).autocomplete({
-      lookup: name_list
-    });
+    if (name_list.length > 0) {
+      $( "#owner" ).autocomplete({
+        lookup: name_list
+      });
+    } else {
+      alert("Autocomplete is disabled due to names not imported into database.")
+    }
   } );

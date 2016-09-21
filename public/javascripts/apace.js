@@ -133,7 +133,7 @@ $(document).ready( function () {
 
     var item = {
       info: $(".modal-body #history").val(),
-      by: 'frank',  // TODO: get user name from session
+      by: $('#li_my a label').html(),
       at: Date.now(),
       status: $('input[name=status]:checked').val()
     };
@@ -239,6 +239,8 @@ $(document).ready( function () {
       if (action_map[dataId].hasOwnProperty('updates')) {
         data.history = action_map[dataId].updates;
       }
+    } else {
+      data.author = $('#li_my a label').html();
     }
 
     $.ajax({

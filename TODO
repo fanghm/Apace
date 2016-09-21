@@ -38,6 +38,7 @@ Login and permission control
   - LDAP authentication [x]
   * Store user info in session for personalized display (my actions, pagination setting, ...)
   - Permission control: 
+    * when add/editing action, if not login, redirect to login
     - admin can update global settings like category/status definitions, default pagination setting
   - Login error removable with bootstrap alert
 
@@ -52,6 +53,7 @@ Mail Notification
   - when no update in N(configurable) days (CC action creator)
   - when owner changes (CC original owner)
   - to author: when status changed to Done/Blocked/... (configurable)
+  * use better mail template
 
 Others
   - app logo    [x]
@@ -59,9 +61,11 @@ Others
   - Action update logging/history for audit?
   - SaaS
   - handle shortcut routes with in-built filters, for quick access, like "/cif" -> {category: 'CIF meeting'}
+  - put name list in cache
 
 Refactoring
   - put modal html into separate file
+  - save action.author_id and history.by as ObjectId instead of name string, as user alias may change
 
 
 Problems:

@@ -44,7 +44,7 @@ function auth(uid, pass, cb) {
     if (user && typeof (user.uidNumber) !== 'undefined') {
       console.log("User exists in db: " + JSON.stringify(user));
 
-      // Note: ONLY employeeNumber can be used for authentication
+      // Note: ONLY employeeNumber can be used in dn for authentication
       var dn = "employeeNumber=" + user.uidNumber + ",ou=Internal,ou=People,o=NSN";
       ldap.authenticate(dn, pass, function(error) {
         if(error) {

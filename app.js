@@ -30,29 +30,34 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser(config.session_secret));
+//app.use(cookieParser(config.session_secret));
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 var store = new MongoDBStore(
   {
-    uri: 'mongodb://localhost:27017/apace_sessions',
+    uri: 'mongodb://127.0.0.1:27017/apace_sessions',
     collection: 'apace'
-  });
+  }/*,
+  function(error) {
+    if (error) console.log("Fail to connect to mongodb: " + JSON.stringify(error) );
+  }*/);
 
-store.on('error', function(error) {
-  console.log("Fail to store user session: " + error.message);
-});
+// store.on('error', function(error) {
+//   console.log("Fail to store user session: " + error.message);
+// });
 
 var sess = {
   store: store,
   secret: config.session_secret,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-    signed: true,
+    //signed: true,
   },
   resave: true, // false,
   saveUninitialized: true, // false,
+  secure: false,
+  sameSite: false,
 };
 
 if (app.get('env') === 'production') {
@@ -61,6 +66,10 @@ if (app.get('env') === 'production') {
 }
 
 app.use(session(sess));
+// app.use(function(req, res, next) {
+//   res.locals.session = req.session;
+//   next();
+// });
 
 app.use('/', routes);
 
@@ -95,5 +104,26 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// get host ip
+var os = require('os');
+var ifaces = os.networkInterfaces();
+Object.keys(ifaces).some(function (ifname) {
+  var found = false;
+
+  ifaces[ifname].some(function (iface) {
+    if ('IPv4' === iface.family && iface.internal === false) {
+      config['apace_url'] = 'http://' + iface.address;
+      return found = true;
+    }
+  });
+
+  if (found) return true;
+});
+
+var port = (config.port || '3000');
+if ('80' !== port) {
+  config['app_url'] += ':' + (config.port || '3000');
+}
+// console.log(config['app_url']);
 
 module.exports = app;

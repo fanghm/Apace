@@ -6,7 +6,7 @@ var noop = function() {};
 
 module.exports = {
   authenticate: function(dn, password, callback) {
-    console.log("auth dn: " + dn);
+    // console.log("auth dn: " + dn);
     callback = callback || noop;
 
     var client = ldap.createClient({
