@@ -192,10 +192,9 @@
             <label for="category">Category:</label>
             <select class="form-control" id="category" required>
               <option value="" selected>-- Select --</option>
-              <option value="CIF meeting">CIF meeting</option>
-              <option value="RCA/EDA">RCA/EDA</option>
-              <option value="Retrospective">Retrospective</option>
-              <option value="Other">Other</option>
+              {{#each action_categories}}
+              <option value="{{this}}">{{this}}</option>
+              {{/each}}
             </select>
           </div>
 
@@ -216,12 +215,9 @@
 
           <div class="form-group" id="grp_status" style="display:none;">
             <label for="optradio">Status:</label><br>
-            <label class="radio-inline"><input type="radio" name="status" value='New'>New</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Ongoing'>Ongoing</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Done'>Done</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Suspended'>Suspended</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Blocked'>Blocked</label>
-            <label class="radio-inline"><input type="radio" name="status" value='Cancelled'>Cancelled</label>
+            {{#each action_status}}
+            <label class="radio-inline"><input type="radio" name="status" value='{{this}}'>{{this}}</label>
+            {{/each}}
           </div>
 
           <!--div class="form-group" id="grp_status1">

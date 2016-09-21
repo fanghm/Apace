@@ -1,5 +1,6 @@
 var Action       = require('../models').Action;
 var User         = require('../models').User;
+var Setting      = require('../models').Setting;
 var config       = require('../config');
 var mailer       = require('../middlewares/mail');
 var EventProxy   = require('eventproxy');
@@ -68,6 +69,8 @@ exports.index = function(req, res, next) {
       actions: actions,
       action_map: JSON.stringify(action_map),
       name_list: JSON.stringify(name_list),
+      action_categories: config.action_categories,
+      action_status: config.action_status,
     };
 
     res.render('action', data);
