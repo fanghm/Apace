@@ -106,13 +106,13 @@ $(document).ready( function () {
       $("#grp_history").show();
       $("#grp_status").show();
 
-      //console.log('update action: ' + JSON.stringify(action_map[dataId]) );
+      // console.log('update action: ' + JSON.stringify(action_map[dataId]) );
       $(".modal-body #title").val( action_map[dataId].title );
       $(".modal-body #desc").val( action_map[dataId].desc );
       $('.modal-body #category').val( action_map[dataId].category );
       $('.modal-body #ref').val( action_map[dataId].ref );
       $('.modal-body #le').val( moment(action_map[dataId].le).format('YYYY/MM/DD HH:mm') );
-      $(".modal-body #owner").val( action_map[dataId].owner );
+      $(".modal-body #owner").val( action_map[dataId].owner.name );
       $("input[name=status][value='" + action_map[dataId].status + "']").prop("checked", true);
 
       // Sort by date desc, only display first 3
@@ -133,7 +133,7 @@ $(document).ready( function () {
 
     var item = {
       info: $(".modal-body #history").val(),
-      by: $('#li_my a label').html(),
+      by: $('#li_my a label').html(), // default 'User'
       at: Date.now(),
       status: $('input[name=status]:checked').val()
     };
@@ -179,6 +179,22 @@ $(document).ready( function () {
 
   });
 
+  function checkOwner(owner_t, cb) {
+    var owner = {};
+    var re_mail = /[\w.]+@nokia.com$/;
+
+    if (re_mail.test(owner_t)) {
+      owner.email = owner_t;
+      return cb(null, owner);
+    } else if ($("#owner").data('id')) {
+      owner.uid = $("#owner").data('id');
+      owner.name = owner_t;
+      return cb(null, owner);
+    } else {
+      return cb(new Error("Unknown owner. \nWhen user name not prompted automatically, pls provide a valid NOKIA email."));
+    }
+  }
+
   // add/edit an item
   $('#saveAction').on( 'click', function () {
     var row = $(this).data('row');
@@ -205,23 +221,12 @@ $(document).ready( function () {
       return false;
     }
 
-    var owner = $('#owner').val().trim();
-    if (!_.includes(name_list, owner)) {
-      // name not in list, then it must be a valid email
-      var re_mail = /[\w.]+@nokia.com$/;
-      if (!re_mail.test(owner)) {
-        alert("Unknown owner. \nWhen user name not prompted automatically, pls provide his email.");
-        return false;
-      }
-    }
-
     var data = {
       title:    $('#title').val().trim(),
       desc:     $('#desc').val().trim(),
       category: $('#category').val(),
       ref:      $('#ref').val().trim(),
       le:       moment( $('#le').val().trim(), 'YYYY-MM-DD HH:mm'),
-      owner:    $('#owner').val().trim(),
       status:   'New',
     };
 
@@ -229,6 +234,7 @@ $(document).ready( function () {
     var url = '/add';
     var method = 'POST';
 
+    var owner_t = $('#owner').val().trim();
     if (typeof dataId !== 'undefined' && dataId != '') {
       addAction = false;
       url = '/update/' + dataId;
@@ -239,8 +245,29 @@ $(document).ready( function () {
       if (action_map[dataId].hasOwnProperty('updates')) {
         data.history = action_map[dataId].updates;
       }
+
+      // owner changed
+      if (owner_t !== action_map[dataId].owner.name) {
+        console.log('owner changed to ' + owner_t);
+        checkOwner(owner_t, function(err, owner) {
+          if (err) {
+            alert(err.message);
+            return false;
+          }
+          data.owner = owner;
+        });
+      }
     } else {
       data.author = $('#li_my a label').html();
+      data.author_id = $('#li_my a label').data('id');  // undefined if no login
+
+      checkOwner(owner_t, function(err, owner) {
+        if (err) {
+          alert(err.message);
+          return false;
+        }
+        data.owner = owner;
+      });
     }
 
     $.ajax({
@@ -257,13 +284,12 @@ $(document).ready( function () {
         // TODO: display inserted/updated item on current page, no scrolling to other page
         if (addAction) {
           //moment.locale('zh-cn');
-
           t.row.add( [
             '',
             action.title,
             action.category,
             action.status,
-            action.owner,
+            action.owner.name,
             moment(action.le).format('YYYY-MM-DD HH:mm'),
             moment(action.update_at).fromNow(),
             '<a class="btn btn-primary" data-id="' + action._id + '" data-toggle="modal" data-target="#dlgModal"> <span class="glyphicon glyphicon-edit"></span> </a>'
@@ -282,7 +308,7 @@ $(document).ready( function () {
 
           tr.find("td:nth-child(3)").html( action.category ); // col 3
           tr.find("td:nth-child(4)").html( action.status );
-          tr.find("td:nth-child(5)").html( action.owner );
+          tr.find("td:nth-child(5)").html( action.owner.name );
           tr.find("td:nth-child(6)").html( moment(action.le).format('YYYY-MM-DD HH:mm') );
           tr.find("td:nth-child(7)").html( moment(action.update_at).fromNow() );
 
@@ -297,7 +323,8 @@ $(document).ready( function () {
       },
 
       error: function( jqXhr, textStatus, errorThrown ) {
-        console.log( errorThrown );
+        console.log( errorThrown + JSON.stringify(jqXhr));
+        alert(jqXhr.responseJSON.error);
       }
     });
 
@@ -341,6 +368,7 @@ $(document).ready( function () {
           // $('a[href="' + window.location.hash + '"]').trigger('click');
 
           $('#li_my a label').html(user.name);
+          $('#li_my a label').data('id', user.uidNumber);
           $('#li_my').show();
           $('#li_my a').click();
 

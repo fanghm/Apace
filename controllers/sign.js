@@ -2,7 +2,7 @@ var _       = require('lodash');
 var User    = require('../models').User;
 var ldap    = require('../middlewares/ldap_auth');
 
-function guess_uid_type(uid) {
+function guessUidType(uid) {
   var re_id  = /^[1-9]\d{7}$/;
   var re_mail = /[\w.]+@nokia.com$/;
   var filter  = '';
@@ -21,7 +21,7 @@ exports.login = function (req, res, next) {
   var pass  = _.trim(req.body.pass);
 
   if (!uid || !pass) {
-    return res.status(200).json(Error('Bad uid or pass.'));
+    return res.status(200).json(new Error('Bad uid or pass.'));
   }
 
   auth(uid, pass, function(err, user) {
@@ -36,13 +36,13 @@ exports.login = function (req, res, next) {
 };
 
 function auth(uid, pass, cb) {
-  var uid_type = guess_uid_type(uid);
+  var uid_type = guessUidType(uid);
 
   var query = {};
   query[uid_type] = uid; // find user by uid, mail, or uidNumber
   User.findOne(query, function(err, user) {
     if (user && typeof (user.uidNumber) !== 'undefined') {
-      console.log("User exists in db: " + JSON.stringify(user));
+      // console.log("User exists in db: " + JSON.stringify(user));
 
       // Note: ONLY employeeNumber can be used in dn for authentication
       var dn = "employeeNumber=" + user.uidNumber + ",ou=Internal,ou=People,o=NSN";

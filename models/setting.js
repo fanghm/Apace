@@ -12,3 +12,12 @@ var SettingSchema = new Schema({
 
 SettingSchema.plugin(BaseModel);
 mongoose.model('Setting', SettingSchema);
+
+
+/*
+user_id:  Schema.ObjectId, // null for global setting
+settings: {}  // Schema.Types.Mixed
+              // filter
+              // pagination
+              // mail_options
+*/

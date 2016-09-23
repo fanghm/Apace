@@ -2,11 +2,11 @@ var nodemailer      = require("nodemailer");
 var smtpTransport   = require('nodemailer-smtp-transport');
 var config          = require('../config');
 
-exports.sendMail = function(to, cb) {
+exports.sendMail = function(to, title, cb) {
   var mail = {
     from: '"Apace" <no-reply@nokia.com>',
     to: (config.debug ? config.test_email : to ),  // TODO: change before formal deployment
-    subject: "Your action is due soon...",
+    subject: "[Apace] An AP is assigned to you: " + title,
     text: "This is an email from Apace App, do not reply it.",
     html: "<p>Pls visit <a href='" + config.app_url + "'>Apace</a> to view/update the actions on you."
   };

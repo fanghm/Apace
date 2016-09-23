@@ -15,6 +15,9 @@ var UserSchema = new Schema({
   
   create_at: { type: Date },
   update_at: { type: Date },
+
+  // don't remove user records, update this flag only
+  deleted:   { type: Boolean, default: false },
 });
 
 UserSchema.plugin(BaseModel);

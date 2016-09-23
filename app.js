@@ -112,7 +112,7 @@ Object.keys(ifaces).some(function (ifname) {
 
   ifaces[ifname].some(function (iface) {
     if ('IPv4' === iface.family && iface.internal === false) {
-      config['apace_url'] = 'http://' + iface.address;
+      config['app_url'] = 'http://' + iface.address;
       return found = true;
     }
   });

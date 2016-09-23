@@ -52,7 +52,7 @@ module.exports = {
           client.unbind();
 
           if (entrys.length === 0) {
-            return callback(Error('No such user whose ' + filter), null);
+            return callback(new Error('No such user whose ' + filter), null);
           }
 
           var entry = entrys[0];

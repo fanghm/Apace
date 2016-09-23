@@ -1,5 +1,6 @@
 var Action       = require('../models').Action;
 var User         = require('../models').User;
+var UserCtrl     = require('./user');
 var Setting      = require('../models').Setting;
 var config       = require('../config');
 var mailer       = require('../middlewares/mail');
@@ -8,7 +9,6 @@ var validator    = require('validator');
 var _            = require('lodash');
 
 var getActionsByQuery = function (query, opt, callback) {
-  query.deleted = false;
   Action.find(query, {}, opt, function (err, actions) {
     if (err) {
       return callback(err);
@@ -18,57 +18,79 @@ var getActionsByQuery = function (query, opt, callback) {
       return callback(null, []);
     }
 
-    //actions = _.compact(actions);
     return callback(null, actions);
   });
 };
 
-var getAllNames = function (callback) {
-  User.find({}, {name:1, _id:0}, {}, function (err, names) {
-    if (err) {
-      return callback(err);
-    }
+// Fill missing user info
+var updateUserInfo = function (owner, callback) {
+  if (!owner.hasOwnProperty('email') && owner.hasOwnProperty('uid')) {
+    UserCtrl.getUserMailById(owner.uid, function (err, user) {
+      if (err) {
+        callback(err);
+      }
 
-    if (names.length === 0) {
-      return callback(null, []);
-    }
+      if (user) {
+        owner.email = user.mail;
+        callback(null, owner);
+      } else {
+        callback(new Error('No such user with uidNumber - ' + owner.uid));
+      }
+    });
+  } else if ( !owner.hasOwnProperty('uid') || !owner.hasOwnProperty('name') ) {
+    UserCtrl.getUserByMail(owner.email, function (err, user) {
+      if (err) {
+        callback(err);
+      }
 
-    return callback(null, names);
-  });
-};
+      if (user) {
+        owner.uid = user.uidNumber;
+        owner.name = user.name;
+        callback(null, owner);
+      } else {
+        // wrong email
+        callback(new Error('No such user with email - ' + owner.email));
+      }
+    });
+  } else {
+    console.log('Fatal: unknown action owner: ' + JSON.stringify(owner));
+    callback(new Error('Fatal: unknown action owner: ' + JSON.stringify(owner)));
+  }
+}
 
 exports.index = function(req, res, next) {
   var ep = EventProxy.create();
   ep.fail(next);
 
-  getActionsByQuery({}, {}, function (err, actions) {
-    if (err) {
-      return next(err);
-    }
-    ep.emit('actions', actions);
-  });
+  var query = { deleted: false };
+  var options = { sort: 'create_at' };
+  getActionsByQuery(query, options, ep.done('actions', function (actions) {
+    return actions;
+  }));
 
-  getAllNames(function (err, names) {
-    if (err) {
-      return next(err);
-    }
-    ep.emit('names', names);
-  });
+  UserCtrl.getUsers(ep.done('users', function (users) {
+    return users;
+  }));
 
-  ep.all('actions', 'names', function (actions, names) {
+  ep.all('actions', 'users', function (actions, users) {
+    // convert users into array of objects {uidNumber: name} for name lookup
+    // var user_map = _.reduce(users , function(obj, user) {
+    //   obj[user.data] = user.value;
+    //   return obj;
+    // }, {});
+    // console.log("user_map: " + JSON.stringify(user_map));
+
     // convert obj array to map for the convenience of fetching data with _id in client js
     var action_map = {};
     actions.forEach(function ( action ) {
       action_map[ action._id ] = action;
+      console.log("action_map: " + JSON.stringify(action_map));
     });
-
-    var name_list = _.map(names, 'name');
-    console.log("name_list: " + JSON.stringify(name_list));
 
     var data = {
       actions: actions,
       action_map: JSON.stringify(action_map),
-      name_list: JSON.stringify(name_list),
+      name_suggestions: JSON.stringify(users),
       action_categories: config.action_categories,
       action_status: config.action_status,
     };
@@ -79,8 +101,8 @@ exports.index = function(req, res, next) {
 };
 
 exports.add = function(req, res, next) {
+  console.log('req.body: ' + JSON.stringify(req.body));
 
-  //console.log('req.body: ' + JSON.stringify(req.body));
   // because there're too many attributes,
   // get them from req.body in a loop
   var act = new Action();
@@ -93,30 +115,45 @@ exports.add = function(req, res, next) {
       }
     }
   }
+  
+  var proxy = new EventProxy();
+  proxy.fail(next);
 
+  updateUserInfo(req.body.owner, function(err, owner) {
+    if (err) {
+      return res.status(500).json(err);
+    }
+
+    act.owner = owner;
+    proxy.emit('email');
+  });
+  
   act.create_at = act.update_at = Date.now();
   act.history.push({
     info: 'first created',
-    by:   act.author,
-    at:   act.create_at
+    by:   req.body.author || 'NA',
+    at:   act.create_at,
+    status: act.status
   });
 
   console.log("add act: " + JSON.stringify(act));
-  act.save(function (err, action, numAffected) {
-    if (err) {
-      console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(act));
-      return res.status(200).json({error: err.message});
-    } else {
-      mailer.sendMail(config.test_email, function(err, info) {  // TODO: use owner's email
-        if (err) {
-          console.log("Error in sending email: " + err.message);
-        } else {
-          console.log("An email is sent to action owner: " + JSON.stringify(info));
-        }
-      });
-      return res.status(200).json(action);
-    }
+  proxy.all('email', function (mail) {
+    act.save(function (err, action, numAffected) {
+      if (err) {
+        console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(act));
+        return res.status(500).json({error: err.message});
+      } else {
+        mailer.sendMail(action.owner.email, action.title, function(err, info) {
+          if (err) {
+            console.log("Error in sending email: " + err.message);
+          } else {
+            console.log("Sent mail: " + JSON.stringify(info));
+          }
+        });
 
+        return res.status(200).json(action);
+      }
+    });
   });
 };
 
@@ -156,6 +193,25 @@ exports.update = function(req, res, next) {
     if (!action) {
       return res.status(200).json({ msg: 'Action not found: _id = ' + action_id });
     }
+
+    // owner changed
+    if (req.body.hasOwnProperty('owner')) {
+      updateUserInfo(req.body.owner, function(err, owner) {
+        if (err) {
+          return next(err);
+        }
+        action.owner = owner;
+      });
+
+      // Send email to new owner
+      mailer.sendMail(action.owner.email, action.title, function(err, info) {
+        if (err) {
+          console.log("Error in sending email: " + err.message);
+        } else {
+          console.log("Sent mail: " + JSON.stringify(info));
+        }
+      });
+    };
 
     // update
     for(var prop in req.body) {

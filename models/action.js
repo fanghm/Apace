@@ -8,19 +8,16 @@ var ActionSchema = new Schema({
   title:      { type: String, required: true },
   desc:       { type: String },
 
-  category:   { type: String, required: true,
-                enum: ['RCA/EDA', 'Retrospective', 'CIF meeting', 'Internal Audit', 'Other'] },
+  category:   { type: String, required: true },
   ref:        { type: String },   // reference: optional, PR#, Feature ID, etc
 
-  owner:      { type: String, required: true },
+  owner:      { uid: Number, name: String, email: String },
   le:         { type: Date, required: true },   // LE: latest estimation
 
-  status:     { type: String, required: true,
-                enum: ['New', 'Ongoing', 'Done', 'Cancelled', 'Blocked', 'Suspended'] },
+  status:     { type: String, required: true },
   history:    [ { info: String, by: String, at: Date, status: String } ], // eg: [2016/09/01] frank: first created
 
-  author:     { type: String },
-  // author_id:  { type: ObjectId },
+  author_id:  { type: Number }, // User.uidNumber
 
   create_at:  { type: Date, default: Date.now },
   update_at:  { type: Date, default: Date.now },

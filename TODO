@@ -43,6 +43,7 @@ Login and permission control
     * when add/editing action, if not login, redirect to login
     - admin can update global settings like category/status definitions, default pagination setting
   - Login error removable with bootstrap alert
+  - 'remmeber me' by cookie
 
 Setting
   - category/status definitions
@@ -64,10 +65,13 @@ Others
   - SaaS
   - handle shortcut routes with in-built filters, for quick access, like "/cif" -> {category: 'CIF meeting'}
   - put name list in cache
+  - check indexes on collections
+  - disable DataTables warnings
 
 Refactoring
   - put modal html into separate file
   - save action.author_id and history.by as ObjectId instead of name string, as user alias may change
+  - only send updated fields to backend via ajax
 
 
 Problems:
@@ -75,5 +79,6 @@ Problems:
 Add action modal dialog always loading with previous data    [x]
 The sequence number of new added item (may not be a problem) [ ]
 Main tab not shown correctly user upon logout                [ ]
-
+removeData() doesn't work
+Render view error when input invalid owner email
 
