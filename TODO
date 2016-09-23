@@ -14,7 +14,7 @@ Add action
     - Read from database, and allow to update from setting
   - Datetime picker for LE input [x]
   - Input assistence for owner field: either auto-complete, or search [x]
-  * Verify owner is valid (for sending email notification)
+  - Verify owner is valid (for sending email notification) [x]
   - Display update history in list [x]
   - Apply different CSS on field labels to indicate non-mandatory fields
 
@@ -40,10 +40,10 @@ Login and permission control
   - LDAP authentication [x]
   * Store user info in session for personalized display (my actions, pagination setting, ...)
   - Permission control: 
-    * when add/editing action, if not login, redirect to login
+    - when add/editing action, if not login, redirect to login [x]
     - admin can update global settings like category/status definitions, default pagination setting
   - Login error removable with bootstrap alert
-  - 'remmeber me' by cookie
+  * 'remmeber me' by cookie
 
 Setting
   - category/status definitions
@@ -76,9 +76,9 @@ Refactoring
 
 Problems:
 ---------
-Add action modal dialog always loading with previous data    [x]
-The sequence number of new added item (may not be a problem) [ ]
-Main tab not shown correctly user upon logout                [ ]
-removeData() doesn't work
-Render view error when input invalid owner email
+  - Add action modal dialog always loading with previous data    [x]
+  * The sequence number of new added item (may not be a problem) [ ]
+  * Main tab not shown correctly user upon logout                [ ]
+  - removeData() doesn't work
+  * Render view error when input invalid owner email
 

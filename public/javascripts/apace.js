@@ -64,6 +64,14 @@ $(document).ready( function () {
 
   // Triggered when modal is about to be shown
   $('#dlgModal').on('show.bs.modal', function (event) {
+    if (typeof $('#li_my a label').data('id') === 'undefined') {
+      var yes = confirm('You need login to continue this operation.\nLogin now?');
+      if (yes) {
+        $('#li_login a').click();
+      }
+      return false;
+    }
+
     var button = $(event.relatedTarget);  // Button that triggered the modal
     var dataId = button.data('id');       // Extract info from data-* attributes
     var btnId = button.attr("id");
