@@ -15,7 +15,7 @@ var ActionSchema = new Schema({
   le:         { type: Date, required: true },   // LE: latest estimation
 
   status:     { type: String, required: true },
-  history:    [ { info: String, by: String, at: Date, status: String } ], // eg: [2016/09/01] frank: first created
+  history:    [ { info: String, by: String, at: Date } ], // eg: [2016/09/01] frank: first created
 
   author_id:  { type: Number }, // User.uidNumber
 

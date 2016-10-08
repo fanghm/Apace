@@ -17,12 +17,16 @@ Add action
   - Verify owner is valid (for sending email notification) [x]
   - Display update history in list [x]
   - Apply different CSS on field labels to indicate non-mandatory fields
+  - Reference: multiple tags can be tagged to one action points with auto-complete hints, display as removable label, searchable (#Scrum Retrospective#)
+  * Add attachment to an AP
+  - More options in extended part: only visible to me
 
 Update/Remove action
   - Basic [x]
   - Store update history as array, and display as list [x]
   - Add new update with fixed prefix of date and author's name, like '[2016/09/09] frank: ' [x]
   (partly dependent on user authentication)
+  - Add history for owner change, or other significant edit operation (like status change)  [x]
 
 Keyboard shortcuts support
   - '/': search [x]
@@ -35,26 +39,29 @@ Keyboard shortcuts support
     - ctrl + 'd': delete
     - ctrl + 's': save
     - ESC: close modal
+  * should not have negative impact to unrelated pages
 
 Login and permission control
   - LDAP authentication [x]
   * Store user info in session for personalized display (my actions, pagination setting, ...)
-  - Permission control: 
+  - Permission control:
     - when add/editing action, if not login, redirect to login [x]
     - admin can update global settings like category/status definitions, default pagination setting
-  - Login error removable with bootstrap alert
+  * Login error removable with bootstrap alert
   * 'remmeber me' by cookie
 
 Setting
-  - category/status definitions
+  - category/status definitions (config categories with short URL settings)
   - pagination setting
-  - user default filter expression like "{category: 'CIF meeting', status: 'ongoing'}"
+  - user homepage with default filters like "{category: 'CIF meeting', status: 'ongoing'}"
+  - short URLs to access AP's pertain to a specific category/tag, like "/cif" -> {category: 'CIF meeting'}
 
 Mail Notification
   - upon action creation [x]
   - when due date is less than N(configurable) days (CC action creator)
   - when no update in N(configurable) days (CC action creator)
   - when owner changes (CC original owner)
+  - when author click "remind" button
   - to author: when status changed to Done/Blocked/... (configurable)
   * use better mail template
 
@@ -62,8 +69,7 @@ Others
   - app logo    [x]
   - favicon     [x]
   - Action update logging/history for audit?
-  - SaaS
-  - handle shortcut routes with in-built filters, for quick access, like "/cif" -> {category: 'CIF meeting'}
+  - PaaS
   - put name list in cache
   - check indexes on collections
   - disable DataTables warnings

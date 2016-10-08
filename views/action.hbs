@@ -28,18 +28,30 @@
 <div class="container">
   <a href="/"><img src="/images/logo.png" alt="Apace" height="85px" width="138px"></a>
   <span class="title">
-    <sub>super-fast action tracker</sub>
+    <sub><i>Action Tracker</i></sub>
   </span>
 </div>
 
 <div class="tabbable tabs-right">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#main" data-toggle="tab">Main</a></li>
-    <li><a href="#setting" data-toggle="tab">Setting</a></li>
-    <li><a href="#help" data-toggle="tab">Help</a></li>
-    <li class="pull-right" id="li_login"><a href="#login" data-toggle="tab">Login</a></li>
-    <li class="pull-right" id="li_my"><a href="#my" data-toggle="tab"><label>User</label>
-      <button class="close" type="button" title="Remove">×</button></a></li>
+    <li class="active">
+      <a href="#main" data-toggle="tab">Main</a>
+    </li>
+    <li>
+      <a href="#setting" data-toggle="tab">Setting</a>
+    </li>
+    <li>
+      <a href="#help" data-toggle="tab">Help</a>
+    </li>
+    <li class="pull-right" id="li_login">
+      <a href="#login" data-toggle="tab">Login</a>
+    </li>
+    <li class="pull-right" id="li_my">
+      <a href="#my" data-toggle="tab">
+        <label>User</label>
+        <button class="close" type="button" title="Logout">×</button>
+      </a>
+    </li>
   </ul>
 
   <div class="tab-content">
@@ -137,7 +149,7 @@
           </div>
           <button id="btnLogin" class="btn btn-primary btn-block" type="submit">Sign in</button>
         </form>
-        <div class="alert alert-warning" role="alert"></div>
+        <div class="alert alert-warning" role="alert" style="display:none;"></div>
       </div> <!-- /container -->
     </div>
 

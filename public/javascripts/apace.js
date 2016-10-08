@@ -54,6 +54,14 @@ $(document).ready( function () {
     $('#title').focus();
   });
 
+  function getUpdateItem(comment) {
+    return {
+      info: comment,
+      by: $('#li_my a label').html(), // default 'User'
+      at: Date.now(),
+    };
+  }
+
   function genUpdateHtml(item) {
     return '<li class="list-group-item">' + 
             '[' + moment(item.at).format('YYYY/MM/DD') + '] ' + 
@@ -133,25 +141,20 @@ $(document).ready( function () {
 
   });
 
-  // add a update history
+  // add a update
   $('#grp_history button').on( 'click', function () {
     if ($(".modal-body #history").val().trim().length === 0) {
       return;
     }
 
-    var item = {
-      info: $(".modal-body #history").val(),
-      by: $('#li_my a label').html(), // default 'User'
-      at: Date.now(),
-      status: $('input[name=status]:checked').val()
-    };
+    var item = getUpdateItem( $(".modal-body #history").val() );
 
     $(".modal-body #grp_history ul").prepend(genUpdateHtml(item));
     $(".modal-body #history").val('');
 
     var dataId = $('#saveAction').data("id");
 
-    // for posting update to server
+    // action_map[dataId]['updates']: for posting updates to server only
     if (!action_map[dataId].hasOwnProperty('updates')) {
       action_map[dataId]['updates'] = [];
     }
@@ -248,8 +251,6 @@ $(document).ready( function () {
       url = '/update/' + dataId;
       method = 'PUT';
 
-      data.status = $('input[name=status]:checked').val();
-
       if (action_map[dataId].hasOwnProperty('updates')) {
         data.history = action_map[dataId].updates;
       }
@@ -262,9 +263,19 @@ $(document).ready( function () {
             alert(err.message);
             return false;
           }
+
           data.owner = owner;
+          data.history.push(getUpdateItem('Owner changed to: ' + owner_t));
         });
       }
+
+      data.status = $('input[name=status]:checked').val();
+
+      // status changed
+      if (data.status !== action_map[dataId].status) {
+        data.history.push(getUpdateItem('Status changed to: ' + data.status));
+      }
+
     } else {
       data.author = $('#li_my a label').html();
       data.author_id = $('#li_my a label').data('id');  // undefined if no login
@@ -341,8 +352,8 @@ $(document).ready( function () {
   // tab operation
   $('#li_my').hide();
 
-  function activaTab(tab) {
-      $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+  function activateTab(tab) {
+      $('.nav-tabs a[href="' + tab + '"]').tab('show');
   };
 
   $('#btnLogin').on( 'click', function () {
@@ -358,35 +369,23 @@ $(document).ready( function () {
       data: JSON.stringify(data),
       contentType: 'application/json',
 
-      success: function(user, textStatus, jQxhr) {
+      success: function(user, textStatus, jqXhr) {
         console.log('Auth succeed: ' + JSON.stringify(user));
-        if (user.hasOwnProperty('error')) {
-          $('#login .alert-warning').html('<strong>Error:<strong> bad account or password!')
-          $('#login .alert-warning').show();
-        } else {
-          $('#login .alert-warning').hide();
 
-          // $('.nav-tabs li:last').before('<li class="pull-right"> <a href="#my" data-toggle="tab">' + user.name 
-          //   + '<button class="close" type="button" title="Remove">×</button> </a> </li>');
-          //$('.tab-content').append('<div class="tab-pane" id="my"><p>welcome</p></div>');
+        $('#li_my a label').html(user.name);
+        $('#li_my a label').data('id', user.uidNumber);
+        $('#li_my').show();
 
-          //hideTab('login');
-          //activaTab('my');
-          //$('#login').hide();
-          // $('a[href="' + window.location.hash + '"]').trigger('click');
+        activateTab('#main');
 
-          $('#li_my a label').html(user.name);
-          $('#li_my a label').data('id', user.uidNumber);
-          $('#li_my').show();
-          $('#li_my a').click();
-
-          // TODO: reset password input
-          $('#li_login').hide();
-        }
+        $('#login .alert-warning').hide();
+        $('#li_login').hide();
       },
 
       error: function( jqXhr, textStatus, errorThrown ) {
-        console.log( errorThrown );
+        $('#login .alert-warning').html('Sorry, your Nokia account or password are incorrect. Pls try again.');
+        $('#login .alert-warning').show();
+        console.log( errorThrown + '|' + textStatus + '|' + JSON.stringify(jqXhr) );
       }
     });
 
@@ -394,14 +393,12 @@ $(document).ready( function () {
 
   $('.nav-tabs').on('click', '.close', function() {
     $('#li_my').hide();
-    $('#li_login').show();
-    //$('#li_login a').click();
-    //activaTab('login');
 
-    //display main tab
-    var tabFirst = $('.nav-tabs li a:first');
-    //tabFirst.tab('show');
-    tabFirst.click();
+    $('#li_login').show();
+    $('#pass').val(''); // reset password input for security
+    activateTab('#login');
+
+    return false;
   });
 
 });
