@@ -48,6 +48,7 @@ $(document).ready( function () {
   // note: only modal data are removed, data-* attributes bounded on the trigger button need extra handling/reset
   $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal'); // modal-title not removed somehow
+    $('#upload ul').html("");
   });
 
   $('#dlgModal').on('shown.bs.modal', function() {
@@ -70,6 +71,12 @@ $(document).ready( function () {
             '</li>';
   }
 
+  function genFileList(item) {
+    return '<li><a href="/uploads/' + item.name + '" download>' +
+            item.name + '</a><i>(' +
+            item.size + ')</i><span></span></li>';
+  }
+
   // Triggered when modal is about to be shown
   $('#dlgModal').on('show.bs.modal', function (event) {
     if (typeof $('#li_my a label').data('id') === 'undefined') {
@@ -89,7 +96,10 @@ $(document).ready( function () {
           || (typeof(dataId) === 'undefined' || dataId === '') ) {  // add
       $(".modal-title").text( 'Add an action point' );
 
+      $('#upload label').hide();
       $("#deleteAction").hide();
+      $("#attachAction").hide();
+
       $("#grp_history").hide();
       $("#grp_status").hide();
       $(".modal-footer #saveAction").data("id", "");  // mandatory!
@@ -119,6 +129,8 @@ $(document).ready( function () {
       console.log("#deleteAction.data-row:" + $(".modal-footer #deleteAction").data("row"));
 
       $("#deleteAction").show();
+      $("#attachAction").show();
+
       $("#grp_history").show();
       $("#grp_status").show();
 
@@ -137,6 +149,16 @@ $(document).ready( function () {
       _.takeRight(_.sortBy( action_map[dataId].history, 'at' ), 3).reverse().forEach(function(item) {
         $(".modal-body #grp_history ul").append(genUpdateHtml(item));
       });
+
+      // console.log('action: ' + JSON.stringify(action_map[dataId]));
+      if (action_map[dataId].attachments.length > 0) {
+        $('#upload label').show();
+        action_map[dataId].attachments.forEach(function(file) {
+          $('#upload ul').append(genFileList(file));
+        });
+      } else {
+        $('#upload label').hide();
+      }
     }
 
   });
@@ -251,6 +273,7 @@ $(document).ready( function () {
       url = '/update/' + dataId;
       method = 'PUT';
 
+      data.history = [];
       if (action_map[dataId].hasOwnProperty('updates')) {
         data.history = action_map[dataId].updates;
       }
@@ -276,6 +299,9 @@ $(document).ready( function () {
         data.history.push(getUpdateItem('Status changed to: ' + data.status));
       }
 
+      if (data.history.length === 0) {
+        delete data.history;
+      }
     } else {
       data.author = $('#li_my a label').html();
       data.author_id = $('#li_my a label').data('id');  // undefined if no login
@@ -342,8 +368,8 @@ $(document).ready( function () {
       },
 
       error: function( jqXhr, textStatus, errorThrown ) {
-        console.log( errorThrown + JSON.stringify(jqXhr));
-        alert(jqXhr.responseJSON.error);
+        console.log( errorThrown + JSON.stringify(jqXhr) + jqXhr.responseJSON.error);
+        alert('Error! Pls make sure all your inputs (like owner\'s email) are correct.');
       }
     });
 

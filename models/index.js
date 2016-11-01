@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var config   = require('../config');
 var logger = require('../common/logger');
 
+mongoose.Promise = global.Promise;  // to suppress DeprecationWarning:
 mongoose.connect(config.db, {
   server: {poolSize: 20}
 }, function (err) {

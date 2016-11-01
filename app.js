@@ -7,9 +7,11 @@ var bodyParser = require('body-parser');
 var session = require('express-session'); // no dependency on cookie-parser
 var MongoDBStore = require('connect-mongodb-session')(session);
 var config = require('./config');
-var routes = require('./routes/index');
-var app = express();
+multer = require('multer'); // global variable for using in routes
 require('colors');  // for colorful console output
+app = express();
+
+var routes = require('./routes/index');
 
 // middlewares
 var renderMiddleware = require('./middlewares/render');
@@ -25,7 +27,6 @@ if (config.debug) {
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
-//console.log(path.join(__dirname, 'public', 'images', 'favicon.ico'));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

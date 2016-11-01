@@ -25,17 +25,17 @@ kbd {
 }
 
 .nav-tabs > li:hover > button {
-    display: inline-block;
+  display: inline-block;
 }
 
 // override default bootstrap style to reduce list height
 .list-group-item {
-    position: relative;
-    display: block;
-    padding: 5px 5px; /* adjust here: 5/15 */
-    margin-bottom: -1px;
-    border: 1px solid #ddd;
-    line-height: 1em /* set to text height */
+  position: relative;
+  display: block;
+  padding: 5px 5px; /* adjust here: 5/15 */
+  margin-bottom: -1px;
+  border: 1px solid #ddd;
+  line-height: 1em /* set to text height */
 }
 
 .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
@@ -44,3 +44,12 @@ kbd {
 .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
 .autocomplete-group { padding: 2px 5px; }
 .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
+#upload ul li span {
+  width: 15px;
+  height: 16px;
+  background: url('../images/icons.png') no-repeat; /* image size: 15*26 */
+  position: absolute;
+  background-position: 0 -12px;
+  cursor:pointer;
+}

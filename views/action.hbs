@@ -256,13 +256,21 @@
             <ul class="list-group">
             </ul>
           </div>
+        </form>
 
+        <form id="upload" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="file">Attachments:</label>
+            <input type="file" id="file" name="upl" style="display:none;"/>
+            <ul></ul>
+          </div>
         </form>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button id="deleteAction" type="button" class="btn btn-danger" style="display:none;">Delete</button>
+        <button id="attachAction" type="button" class="btn btn-info" style="display:none;">Attach</button>
         <button id="saveAction" type="button" class="btn btn-success">Save</button>
       </div>
     </div><!-- /.modal-content -->
@@ -272,6 +280,9 @@
 <script type="text/javascript" src="/javascripts/apace.js"></script>
 <script type="text/javascript" src="/javascripts/kbd.js"></script>
 <script type="text/javascript" src="/javascripts/autocomplete.js"></script>
+<script type="text/javascript" src="/javascripts/upload.js"></script>
+
+
 
 </body>
 </html>

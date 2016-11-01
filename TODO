@@ -17,7 +17,8 @@ Add action
   - Verify owner is valid (for sending email notification) [x]
   - Display update history in list [x]
   - Apply different CSS on field labels to indicate non-mandatory fields
-  - Reference: multiple tags can be tagged to one action points with auto-complete hints, display as removable label, searchable (#Scrum Retrospective#)
+  * Reference: multiple tags can be tagged to one action points with auto-complete hints, display as removable label, searchable (#Scrum Retrospective#)
+    - auto tagging with configured tags like team name
   * Add attachment to an AP
   - More options in extended part: only visible to me
 
@@ -87,4 +88,6 @@ Problems:
   * Main tab not shown correctly user upon logout                [ ]
   - removeData() doesn't work
   * Render view error when input invalid owner email
+  * Cannot remove file attachment
+  * config.upload_path impacts a few places in frontend
 

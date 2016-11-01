@@ -17,6 +17,8 @@ var ActionSchema = new Schema({
   status:     { type: String, required: true },
   history:    [ { info: String, by: String, at: Date } ], // eg: [2016/09/01] frank: first created
 
+  attachments:[ { name: String, size: String } ],
+
   author_id:  { type: Number }, // User.uidNumber
 
   create_at:  { type: Date, default: Date.now },

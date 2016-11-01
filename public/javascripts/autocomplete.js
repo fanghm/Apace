@@ -5,7 +5,7 @@
         "lookupLimit": 9,
         "autoSelectFirst": true,
         "showNoSuggestionNotice": true,
-        "noSuggestionNotice": "Pls provide email if name not prompted",
+        "noSuggestionNotice": "Pls provide a valid NOKIA email if name not prompted",
         "onSelect": function (suggestion) {
           $("#owner").data("id", suggestion.data);  // TODO: unset if select and re-input without suggestion
         }

@@ -42,4 +42,5 @@ public/stylesheets/style.css
 # config file
 config.js
 
-
+# user uploads
+public/uploads/*
