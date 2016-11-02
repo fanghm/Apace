@@ -6,12 +6,13 @@ Display action
   - Expand each item to display update history, and can add a update from main UI conveniently
   - Load data on demand when switching tabs
   * Provide permlink of each action item (for mail link), can display/update separately (probably in a tab)
+  - Display LE friendly, highlight overdue (or close to overdue) actions
 
 Add action
   - Data validation [x]
   - Make category/status definitions configurable
     - Read from config file [x]
-    - Read from database, and allow to update from setting
+    ! Read from database, and allow to update from setting
   - Datetime picker for LE input [x]
   - Input assistence for owner field: either auto-complete, or search [x]
   - Verify owner is valid (for sending email notification) [x]
@@ -19,14 +20,15 @@ Add action
   - Apply different CSS on field labels to indicate non-mandatory fields
   * Reference: multiple tags can be tagged to one action points with auto-complete hints, display as removable label, searchable (#Scrum Retrospective#)
     - auto tagging with configured tags like team name
-  * Add attachment to an AP
-  - More options in extended part: only visible to me
+  - Add attachments to an AP [x]
+  - More options in extended part:
+    - private (visible to author only)
 
 Update/Remove action
   - Basic [x]
   - Store update history as array, and display as list [x]
   - Add new update with fixed prefix of date and author's name, like '[2016/09/09] frank: ' [x]
-  (partly dependent on user authentication)
+    (partly dependent on user authentication)
   - Add history for owner change, or other significant edit operation (like status change)  [x]
 
 Keyboard shortcuts support
@@ -40,16 +42,16 @@ Keyboard shortcuts support
     - ctrl + 'd': delete
     - ctrl + 's': save
     - ESC: close modal
-  * should not have negative impact to unrelated pages
+  * should not have negative impact to unrelated pages (currently cannot input / at login)
 
 Login and permission control
   - LDAP authentication [x]
-  * Store user info in session for personalized display (my actions, pagination setting, ...)
+  ! Store user info in session for personalized display (my actions, pagination setting, ...)
   - Permission control:
     - when add/editing action, if not login, redirect to login [x]
     - admin can update global settings like category/status definitions, default pagination setting
-  * Login error removable with bootstrap alert
-  * 'remmeber me' by cookie
+  - Display login error properly [x]
+  ! 'remmeber me' by cookie
 
 Setting
   - category/status definitions (config categories with short URL settings)
@@ -59,12 +61,12 @@ Setting
 
 Mail Notification
   - upon action creation [x]
-  - when due date is less than N(configurable) days (CC action creator)
-  - when no update in N(configurable) days (CC action creator)
-  - when owner changes (CC original owner)
+  * when due date is less than N (configurable) days (CC action creator)
+  - when no update in N (configurable) days (CC action creator)
+  - when owner changes (CC original owner) [x]
   - when author click "remind" button
   - to author: when status changed to Done/Blocked/... (configurable)
-  * use better mail template
+  ! use better mail template
 
 Others
   - app logo    [x]
@@ -79,15 +81,15 @@ Refactoring
   - put modal html into separate file
   - save action.author_id and history.by as ObjectId instead of name string, as user alias may change
   - only send updated fields to backend via ajax
+  - config.upload_path impacts a few places in frontend [ ]
+  * Cannot remove file attachment                       [ ]
 
 
 Problems:
 ---------
   - Add action modal dialog always loading with previous data    [x]
   * The sequence number of new added item (may not be a problem) [ ]
-  * Main tab not shown correctly user upon logout                [ ]
-  - removeData() doesn't work
-  * Render view error when input invalid owner email
-  * Cannot remove file attachment
-  * config.upload_path impacts a few places in frontend
+  * Main tab not shown correctly upon logout                     [x]
+  - removeData() doesn't work well                               [ ]
+  * Render view error when input invalid owner email             [x]
 
