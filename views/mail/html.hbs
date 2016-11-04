@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Apace Action Reminder</title>
+      <style type="text/css">
+        table {
+          border-collapse: collapse;
+          border-spacing: 0;
+        }
+        td, th {
+          border: 1px solid #cbcbcb;
+          margin: 0;
+          overflow: visible;
+          padding: 0.5em 1em;
+        }
+      </style>
+  </head>
+  <body>
+    <p>{{ action.owner.name }},<p>
+    <p>Pls take care of below action item assigned to you:</p>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>LE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="{{ apace_url }}/{{ action._id }}">{{ action.title }}</a></td>
+          <td>{{ action.category  }}</td>
+          <td>{{ action.status    }}</td>
+          <td>{{ action.le_str    }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p/>
+    <p><i>This email was sent by <a href="{{ apace_url }}">Apace</a> automatically, please do not reply it.</i></p>
+    <p>Apace</p>
+  </body>
+</html>

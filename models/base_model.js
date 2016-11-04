@@ -10,6 +10,10 @@ module.exports = function (schema) {
     return tools.formatDate(this.le, false);
   };
 
+  schema.methods.le_later = function () {
+    return tools.formatDate(this.le, true);
+  };
+
   schema.methods.update_at_ago = function () {
     return tools.formatDate(this.update_at, true);
   };

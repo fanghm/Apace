@@ -143,7 +143,7 @@ $(document).ready( function () {
       $(".modal-body #owner").val( action_map[dataId].owner.name );
       $("input[name=status][value='" + action_map[dataId].status + "']").prop("checked", true);
 
-      // Sort by date desc, only display first 3
+      // TODO@backend: Sort by date desc, only display first 3
       // TODO: add button to expand more
       $(".modal-body #grp_history ul").html('');  // clear first
       _.takeRight(_.sortBy( action_map[dataId].history, 'at' ), 3).reverse().forEach(function(item) {
@@ -368,7 +368,7 @@ $(document).ready( function () {
       },
 
       error: function( jqXhr, textStatus, errorThrown ) {
-        console.log( errorThrown + JSON.stringify(jqXhr) + jqXhr.responseJSON.error);
+        console.log( errorThrown + JSON.stringify(jqXhr) );
         alert('Error! Pls make sure all your inputs (like owner\'s email) are correct.');
       }
     });

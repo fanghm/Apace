@@ -151,7 +151,7 @@ exports.add = function(req, res, next) {
         console.log("Error in saving: " + err.message + '\n action:' + JSON.stringify(act));
         return res.status(500).json({error: err.message});
       } else {
-        mailer.sendMail(action.owner.email, action.title, function(err, info) {
+        mailer.sendMail(action, function(err, info) {
           if (err) {
             console.log("Error in sending email: " + err.message);
           } else {
@@ -213,7 +213,7 @@ exports.update = function(req, res, next) {
       });
 
       // Send email to new owner
-      mailer.sendMail(action.owner.email, action.title, function(err, info) {
+      mailer.sendMail(action, function(err, info) {
         if (err) {
           console.log("Error in sending email: " + err.message);
         } else {

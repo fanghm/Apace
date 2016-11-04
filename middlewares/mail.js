@@ -2,13 +2,14 @@ var nodemailer      = require("nodemailer");
 var smtpTransport   = require('nodemailer-smtp-transport');
 var config          = require('../config');
 
-exports.sendMail = function(to, title, cb) {
+exports.sendMail = function(action, cb) {
+  action.le_str = action.le_time();
   var mail = {
     from: '"Apace" <no-reply@nokia.com>',
-    to: (config.debug ? config.test_email : to ),  // TODO: change before formal deployment
-    subject: "[Apace] An AP is assigned to you: " + title,
-    text: "This is an email from Apace App, do not reply it.",
-    html: "<p>Pls visit <a href='" + config.app_url + "'>Apace</a> to view/update the actions on you."
+    to: (config.debug ? config.test_email : action.owner.email),
+    subject: "[Apace] Please take action: " + action.title,
+    action: action,
+    apace_url: config.app_url,
   };
 
   var transporter = nodemailer.createTransport(
@@ -20,13 +21,16 @@ exports.sendMail = function(to, title, cb) {
     })
   );
 
-  transporter.sendMail(mail, function(error, info) {
-    if(error) {
-      cb(error);
-    } else {
-      cb(null, info);
-    }
+  // Note: template filename must contain html., text., style., and subject. respectively.
+  // Refer: https://github.com/crocodilejs/node-email-templates#supported-template-engines
+  var EmailTemplate = require('email-templates').EmailTemplate;
 
+  var template = new EmailTemplate('views/mail');
+  template.render(mail).then(function (renderedMail) {
+    // console.log('Rendered mail: ', renderedMail);  // html, text, subject
+
+    var send = transporter.templateSender(renderedMail);
+    send(mail, cb);
     transporter.close();
   });
 }
