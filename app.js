@@ -21,6 +21,9 @@ require('./middlewares/db_trace');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');  // handlebars template engine
 
+var hbs = require('hbs');
+hbs.registerPartials(__dirname + '/views/partials');
+
 if (config.debug) {
   app.use(renderMiddleware.render); // logging render time
 }

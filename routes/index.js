@@ -5,6 +5,7 @@ var sign = require('../controllers/sign');
 var router = express.Router();
 
 router.get('/', action.index);
+router.get('/:id', action.edit);
 router.post('/add', action.add);
 router.put('/update/:id', action.update);
 router.delete('/delete/:id', action.delete);

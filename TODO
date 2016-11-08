@@ -5,7 +5,7 @@ Display action
     eg: Filter: [select field] [=|<>|...] [select value]  // for date field, select date range to filter
   - Expand each item to display update history, and can add a update from main UI conveniently
   - Load data on demand when switching tabs
-  * Provide permlink of each action item (for mail link), can display/update separately (probably in a tab)
+  * Provide permlink of each action item (for mail link), can display/update separately (probably in a tab) [x]
   - Display LE friendly, highlight overdue (or close to overdue) actions
 
 Add action
@@ -66,7 +66,7 @@ Mail Notification
   - when owner changes (CC original owner) [x]
   - when author click "remind" button
   - to author: when status changed to Done/Blocked/... (configurable)
-  ! use better mail template
+  - use better mail template [x]
 
 Others
   - app logo    [x]
@@ -78,7 +78,8 @@ Others
   - disable DataTables warnings
 
 Refactoring
-  - put modal html into separate file
+  - put modal html into partial file [x]
+  - use layout/partials to organize views
   - save action.author_id and history.by as ObjectId instead of name string, as user alias may change
   - only send updated fields to backend via ajax
   - config.upload_path impacts a few places in frontend [ ]
@@ -89,7 +90,7 @@ Problems:
 ---------
   - Add action modal dialog always loading with previous data    [x]
   * The sequence number of new added item (may not be a problem) [ ]
-  * Main tab not shown correctly upon logout                     [x]
+  - Main tab not shown correctly upon logout                     [x]
   - removeData() doesn't work well                               [ ]
-  * Render view error when input invalid owner email             [x]
+  - Render view error when input invalid owner email             [x]
 

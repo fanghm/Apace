@@ -68,6 +68,15 @@ exports.index = function(req, res, next) {
   _index(req, res, next, query);
 }
 
+exports.edit = function(req, res, next) {
+  var action_id = req.params.id;
+  console.log("edit id:" + action_id);
+
+  var query = { deleted: false, _id: require('mongoose').Types.ObjectId(action_id)};
+
+  _index(req, res, next, query);
+}
+
 var _index = function(req, res, next, query) {
   var ep = EventProxy.create();
   ep.fail(next);
