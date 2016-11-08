@@ -10,9 +10,10 @@ Display action
 
 Add action
   - Data validation [x]
-  - Make category/status definitions configurable
+  - Make category definitions configurable
     - Read from config file [x]
-    ! Read from database, and allow to update from setting
+    - Read from database [x]
+    ! Allow to update from setting tab []
   - Datetime picker for LE input [x]
   - Input assistence for owner field: either auto-complete, or search [x]
   - Verify owner is valid (for sending email notification) [x]
@@ -76,6 +77,7 @@ Others
   - put name list in cache
   - check indexes on collections
   - disable DataTables warnings
+  * suppress logging output of query results
 
 Refactoring
   - put modal html into partial file [x]

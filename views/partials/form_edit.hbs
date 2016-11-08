@@ -15,8 +15,9 @@
     <select class="form-control" id="category" required>
       <option value="" selected>-- Select --</option>
       {{#each action_categories}}
-      <option value="{{this}}">{{this}}</option>
+      <option value="{{this.category}}">{{this.category}}</option>
       {{/each}}
+      <option value="Others">Others</option>
     </select>
   </div>
 

@@ -2,6 +2,7 @@ var Action       = require('../models').Action;
 var User         = require('../models').User;
 var UserCtrl     = require('./user');
 var Setting      = require('../models').Setting;
+var CategoryCtrl = require('./category');
 var config       = require('../config');
 var mailer       = require('../middlewares/mail');
 var EventProxy   = require('eventproxy');
@@ -90,7 +91,11 @@ var _index = function(req, res, next, query) {
     return users;
   }));
 
-  ep.all('actions', 'users', function (actions, users) {
+  CategoryCtrl.getCategories(ep.done('categories', function (categories) {
+    return categories;
+  }));
+
+  ep.all('actions', 'users', 'categories', function (actions, users, categories) {
     // convert users into array of objects {uidNumber: name} for name lookup
     // var user_map = _.reduce(users , function(obj, user) {
     //   obj[user.data] = user.value;
@@ -109,7 +114,7 @@ var _index = function(req, res, next, query) {
       actions: actions,
       action_map: JSON.stringify(action_map),
       name_suggestions: JSON.stringify(users),
-      action_categories: config.action_categories,
+      action_categories: categories,
       action_status: config.action_status,
     };
 
