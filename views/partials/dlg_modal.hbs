@@ -1,0 +1,32 @@
+<!-- Common modal for add/edit an action item-->
+<div id="dlgModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="lblModal">
+  <div class="modal-dialog" role="document">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="lblModal">Add|Edit an action point</h4>
+      </div>
+
+      <div class="modal-body">
+        {{> form_edit }}
+
+        <form id="upload" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="file">Attachments:</label>
+            <input type="file" id="file" name="upl" style="display:none;"/>
+            <ul></ul>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="deleteAction" type="button" class="btn btn-danger" style="display:none;">Delete</button>
+        <button id="attachAction" type="button" class="btn btn-info" style="display:none;">Attach</button>
+        <button id="saveAction" type="button" class="btn btn-success">Save</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

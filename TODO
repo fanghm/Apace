@@ -80,8 +80,7 @@ Others
   * suppress logging output of query results
 
 Refactoring
-  - put modal html into partial file [x]
-  - use layout/partials to organize views
+  - re-organize SPA view with partials [x]
   - save action.author_id and history.by as ObjectId instead of name string, as user alias may change
   - only send updated fields to backend via ajax
   - config.upload_path impacts a few places in frontend [ ]
